@@ -212,7 +212,7 @@ public class Robot extends TimedRobot {
 			rightSideDrive.set(0);
 		}
 		gyro.reset();
-		if(autoCounter > 61 && autoCounter < 120) {
+		if(autoCounter > 61 && autoCounter < 135) {
 			leftSideDrive.set(0.4+(gyro.getAngle()* 0.015));
 			rightSideDrive.set(-0.4+(gyro.getAngle()*0.015));
 		} else if(autoCounter > 120 && autoCounter < 165) {
@@ -220,10 +220,14 @@ public class Robot extends TimedRobot {
 			rightSideDrive.set(-0.4);
 		}				
 		gyro.reset();
-		if(autoCounter > 165 && autoCounter < 275) {
+		if(autoCounter > 180 && autoCounter < 290) {
 			leftSideDrive.set(0.4+(gyro.getAngle()* 0.03));
 			rightSideDrive.set(-0.4+(gyro.getAngle()*0.1));
-		} else if(autoCounter > 277) {
+		} else if(autoCounter > 290 && autoCounter < 315) {
+			leftSideDrive.set(0.4);
+			rightSideDrive.set(0);
+		}
+		else if(autoCounter > 315) {
 			leftSideDrive.set(0);
 			rightSideDrive.set(0);
 		}

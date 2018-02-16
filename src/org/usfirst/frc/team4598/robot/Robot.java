@@ -163,10 +163,10 @@ public class Robot extends TimedRobot {
 			leftSideDrive.set(0.3);
 			rightSideDrive.set(0.3);
 		}
-		
-
 	}
 	
+	/* Drive to the left switch plate using the limelight camera when starting in the center
+	 player station */
 	private void autonomousOneWithLimelight() {
 		autoCounter++;
 		if(autoCounter < 50 && autoCounter < 51) {
@@ -187,6 +187,8 @@ public class Robot extends TimedRobot {
 		}
 	}
 	
+	/* Drive to the right switch plate using the limelight camera when starting in the center
+	player station */
 	private void autonomousTwoWithLimelight() {
 		autoCounter++;
 		if(autoCounter < 20 && autoCounter < 21) {
@@ -207,6 +209,8 @@ public class Robot extends TimedRobot {
 		}
 	}
 	
+	/* Drive to the left switch plate without using the Limelight camera when starting in the 
+	 center player station */
 	private void autonomousOneWithoutLimelight() {
 		gyro.reset();
 		autoCounter++;
@@ -236,6 +240,8 @@ public class Robot extends TimedRobot {
 		}
 	}
 	
+	/* Drive to the right switch plate without using the Limelight camera when starting in the 
+	 center player station */
 	private void autonomousTwoWithoutLimelight() {
 		gyro.reset();
 		autoCounter++;
@@ -260,7 +266,8 @@ public class Robot extends TimedRobot {
 			rightSideDrive.set(0);
 		}
 	}
-	
+
+	// Drive to the scale right plate when in the right player station
 	private void scaleRightAndPlayerStationRight() {
 		gyro.reset();
 		autoCounter++;
@@ -282,6 +289,7 @@ public class Robot extends TimedRobot {
 		}
 	}
 	
+	// Drive to the scale left plate when in the left player station
 	private void scaleLeftAndPlayerStationLeft() {
 		gyro.reset();
 		autoCounter++;
@@ -302,11 +310,13 @@ public class Robot extends TimedRobot {
 			rightSideDrive.set(0);
 		}
 	}
-
+	
+	// Drive to the left scale plate when starting in the right player station
 	private void scaleLeftAndPlayerStationRight() {
 		
 	}
 	
+	// Drive to the right scale plate when starting in the left player station
 	private void scaleRightAndPlayerStationLeft() {
 		
 	}

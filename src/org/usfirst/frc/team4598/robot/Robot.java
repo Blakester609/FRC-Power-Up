@@ -131,7 +131,10 @@ public class Robot extends TimedRobot {
 		rightDrive2.setSafetyEnabled(false);
 		leftDrive1.setSafetyEnabled(false);
 		leftDrive2.setSafetyEnabled(false);
+		autoCounter = 0;
 	}
+	
+// **************************************Autonomous Methods************************************
 	public void visionTrackingRight() {
 		if(tv.getDouble(0) == 1.0) {
 			leftSideDrive.set(0.4);
@@ -257,6 +260,58 @@ public class Robot extends TimedRobot {
 			rightSideDrive.set(0);
 		}
 	}
+	
+	private void scaleRightAndPlayerStationRight() {
+		gyro.reset();
+		autoCounter++;
+		if(autoCounter < 310) {
+			leftSideDrive.set(0.4+(gyro.getAngle()* 0.6015));
+			rightSideDrive.set(-0.4+(gyro.getAngle()*0.6015));
+		} else if(autoCounter > 310 && autoCounter < 325) {
+			leftSideDrive.set(4.0);
+			rightSideDrive.set(0);
+		} 
+		gyro.reset();
+		if(autoCounter > 325 && autoCounter < 345) {
+			leftSideDrive.set(0.4+(gyro.getAngle()* 0.6));
+			rightSideDrive.set(-0.4+(gyro.getAngle()*0.6));
+		}
+		else if(autoCounter > 345) {
+			leftSideDrive.set(0);
+			rightSideDrive.set(0);
+		}
+	}
+	
+	private void scaleLeftAndPlayerStationLeft() {
+		gyro.reset();
+		autoCounter++;
+		if(autoCounter < 310) {
+			leftSideDrive.set(0.4+(gyro.getAngle()* 0.6015));
+			rightSideDrive.set(-0.4+(gyro.getAngle()*0.6015));
+		} else if(autoCounter > 310 && autoCounter < 325) {
+			leftSideDrive.set(0);
+			rightSideDrive.set(-4.0);
+		} 
+		gyro.reset();
+		if(autoCounter > 325 && autoCounter < 345) {
+			leftSideDrive.set(0.4+(gyro.getAngle()* 0.6));
+			rightSideDrive.set(-0.4+(gyro.getAngle()*0.6));
+		}
+		else if(autoCounter > 345) {
+			leftSideDrive.set(0);
+			rightSideDrive.set(0);
+		}
+	}
+
+	private void scaleLeftAndPlayerStationRight() {
+		
+	}
+	
+	private void scaleRightAndPlayerStationLeft() {
+		
+	}
+	
+//^^^^^^^^^^^^^^^^^^^^^^^^^Autonomous Methods^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 	/**
 	 * This autonomous (along with the chooser code above) shows how to select
@@ -271,20 +326,34 @@ public class Robot extends TimedRobot {
 	 */
 	@Override
 	public void autonomousInit() {
-		autoCounter = 0;
 		gameData = DriverStation.getInstance().getGameSpecificMessage();
 		playerStation = playerStationChooser.getSelected();
 		// autoSelected = SmartDashboard.getString("Auto Selector",
 		// defaultAuto);
-		playerStation = blue2;
+//		playerStation = blue2;
 		System.out.println("Player Station: " + playerStation);
-		if(playerStation == blue2) {
+		if(playerStation == blue2 || playerStation == red2) {
 			if(gameData.length() > 0) {
 				if(gameData.charAt(0) == 'L') {
 						autoCommand = "autonomous 1";
-				} else if(gameData.charAt(0) == 'R') {
+				}
+				if(gameData.charAt(0) == 'R') {
 					autoCommand = "autonomous 2";
 				}
+			}
+		} else if(playerStation == blue3 || playerStation == red3) {
+			if(gameData.charAt(1) == 'L') {
+				autoCommand = "autonomous 3";
+			}
+			if(gameData.charAt(1) == 'R') {
+				autoCommand = "autonomous 4";
+			}
+		} else if(playerStation == blue1 || playerStation == red1) {
+			if(gameData.charAt(1) == 'L') {
+				autoCommand = "autonomous 5";
+			}
+			if(gameData.charAt(1) == 'R') {
+				autoCommand = "autonomous 6";
 			}
 		}
 		
@@ -295,18 +364,29 @@ public class Robot extends TimedRobot {
 	 */
 	@Override
 	public void autonomousPeriodic() {
-		camMode.setNumber(0);
-		pipeline0.setNumber(0);
 		ledMode.setNumber(0);
+		camMode.setNumber(0);
 		switch (autoCommand) {
-		case "autonomous 1":
-//			autonomousOneWithLimelight();
-			autonomousOneWithoutLimelight();
-			break;
-		case "autonomous 2":
-			//autonomousTwoWithLimelight();
-			autonomousTwoWithoutLimelight();
-			break;
+			case "autonomous 1":
+//				autonomousOneWithLimelight();
+				autonomousOneWithoutLimelight();
+				break;
+			case "autonomous 2":
+				autonomousTwoWithLimelight();
+//				autonomousTwoWithoutLimelight();
+				break;
+			case "autonomous 3":
+				scaleLeftAndPlayerStationRight();
+				break;
+			case "autonomous 4":
+				scaleRightAndPlayerStationRight();
+				break;
+			case "autonomous 5":
+				scaleRightAndPlayerStationLeft();
+				break;
+			case "autonomous 6":
+				scaleLeftAndPlayerStationLeft();
+				break;
 			}
 	}
 		

@@ -212,17 +212,20 @@ public class Robot extends TimedRobot {
 			rightSideDrive.set(0);
 		}
 		gyro.reset();
-		if(autoCounter > 61 && autoCounter < 130) {
+		if(autoCounter > 61 && autoCounter < 120) {
 			leftSideDrive.set(0.4+(gyro.getAngle()* 0.015));
 			rightSideDrive.set(-0.4+(gyro.getAngle()*0.015));
-		} else if(autoCounter > 130 && autoCounter < 150) {
+		} else if(autoCounter > 120 && autoCounter < 165) {
 			leftSideDrive.set(0);
 			rightSideDrive.set(-0.4);
 		}				
 		gyro.reset();
-		if(autoCounter > 150 && autoCounter < 210) {
-			leftSideDrive.set(0.4+(gyro.getAngle()* 0.1));
+		if(autoCounter > 165 && autoCounter < 275) {
+			leftSideDrive.set(0.4+(gyro.getAngle()* 0.03));
 			rightSideDrive.set(-0.4+(gyro.getAngle()*0.1));
+		} else if(autoCounter > 277) {
+			leftSideDrive.set(0);
+			rightSideDrive.set(0);
 		}
 	}
 	
@@ -234,17 +237,20 @@ public class Robot extends TimedRobot {
 			rightSideDrive.set(-0.4);
 		}
 		gyro.reset();
-		if(autoCounter > 22 && autoCounter < 70) {
-			leftSideDrive.set(0.4+(gyro.getAngle()* 0.03));
-			rightSideDrive.set(-0.4+(gyro.getAngle()*0.03));
-		} else if(autoCounter > 70 && autoCounter < 128) {
+		if(autoCounter > 21 && autoCounter < 70) {
+			leftSideDrive.set(0.4+(gyro.getAngle()* 0.015));
+			rightSideDrive.set(-0.4+(gyro.getAngle()*0.015));
+		} else if(autoCounter > 70 && autoCounter < 110) {
 			leftSideDrive.set(0.4);
 			rightSideDrive.set(0);
 		}				
 		gyro.reset();
-		if(autoCounter > 130 && autoCounter < 192) {
-			leftSideDrive.set(0.4+(gyro.getAngle()* 0.1));
+		if(autoCounter > 110 && autoCounter < 162) {
+			leftSideDrive.set(0.4+(gyro.getAngle()* 0.03));
 			rightSideDrive.set(-0.4+(gyro.getAngle()*0.1));
+		} else if(autoCounter > 162) {
+			leftSideDrive.set(0);
+			rightSideDrive.set(0);
 		}
 	}
 
@@ -261,6 +267,7 @@ public class Robot extends TimedRobot {
 	 */
 	@Override
 	public void autonomousInit() {
+		autoCounter = 0;
 		gameData = DriverStation.getInstance().getGameSpecificMessage();
 		playerStation = playerStationChooser.getSelected();
 		// autoSelected = SmartDashboard.getString("Auto Selector",
@@ -271,8 +278,7 @@ public class Robot extends TimedRobot {
 			if(gameData.length() > 0) {
 				if(gameData.charAt(0) == 'L') {
 						autoCommand = "autonomous 1";
-				}
-				if(gameData.charAt(0) == 'R') {
+				} else if(gameData.charAt(0) == 'R') {
 					autoCommand = "autonomous 2";
 				}
 			}

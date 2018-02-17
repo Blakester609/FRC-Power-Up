@@ -69,11 +69,11 @@ public class Robot extends TimedRobot {
 	
 	XboxController controller = new XboxController(1);
 	
-	Talon allThreadMotor = new Talon(4);
-	Talon winchMotor = new Talon(7);
+	Victor allThreadMotor = new Victor(4);
+	Victor winchMotor = new Victor(7);
 	
-	Talon clawMotor1 = new Talon(5);
-	Talon clawMotor2 = new Talon(6);
+	Victor clawMotor1 = new Victor(5);
+	Victor clawMotor2 = new Victor(6);
 	
 	DigitalInput limitAllThreadUp = new DigitalInput(1);
 	DigitalInput limitAllThreadDown = new DigitalInput(2);
@@ -332,6 +332,10 @@ public class Robot extends TimedRobot {
 		else if(autoCounter > 345) {
 			leftSideDrive.set(0);
 			rightSideDrive.set(0);
+		} else if(autoCounter > 345 && autoCounter < 385) {
+			allThreadMotor.set(1.0);
+		} else if(autoCounter > 385) {
+			
 		}
 	}
 	
@@ -536,21 +540,21 @@ public class Robot extends TimedRobot {
 		
 		
 		// All Thread Control
-		if((controller.getAButton() && controller.getRawAxis(3) == 1.0) && allThreadMotionUp == true) {
-			allThreadMotor.set(0.4); 
-		} else if((controller.getBButton() && controller.getRawAxis(3) == 1.0) && allThreadMotionDown == true) {
-			allThreadMotor.set(-0.4);
-		} else if((controller.getXButton() && controller.getRawAxis(3) == 1.0) && allThreadMotionUp == true) {
-			allThreadMotor.set(1.0);
-		} else if((controller.getYButton() && controller.getRawAxis(3) == 1.0) && allThreadMotionDown == true) {
-			allThreadMotor.set(-1.0);
-		} else if(allThreadMotionDown == false) {
-			allThreadMotor.set(0);
-		} else if(allThreadMotionUp == false) {
-			allThreadMotor.set(0);
-		} else {
-			allThreadMotor.set(0);
-		}
+//		if((controller.getAButton() && controller.getRawAxis(3) == 1.0) && allThreadMotionUp == true) {
+//			allThreadMotor.set(0.4); 
+//		} else if((controller.getBButton() && controller.getRawAxis(3) == 1.0) && allThreadMotionDown == true) {
+//			allThreadMotor.set(-0.4);
+//		} else if((controller.getXButton() && controller.getRawAxis(3) == 1.0) && allThreadMotionUp == true) {
+//			allThreadMotor.set(1.0);
+//		} else if((controller.getYButton() && controller.getRawAxis(3) == 1.0) && allThreadMotionDown == true) {
+//			allThreadMotor.set(-1.0);
+//		} else if(allThreadMotionDown == false) {
+//			allThreadMotor.set(0);
+//		} else if(allThreadMotionUp == false) {
+//			allThreadMotor.set(0);
+//		} else {
+//			allThreadMotor.set(0);
+//		}
 		
 //		if(controller.getAButton()) {
 //			allThreadMotor.set(0.4);

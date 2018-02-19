@@ -562,8 +562,8 @@ public class Robot extends TimedRobot {
 		}
 		
 		if(controller.getRawAxis(1) != 0 && controller.getRawAxis(0) != 0) {
-			double leftSpeed = -controller.getRawAxis(1)+reduceLeftSpeed;
-			double rightSpeed = controller.getRawAxis(1)+reduceRightSpeed;	
+			double leftSpeed = -0.7*controller.getRawAxis(1)+reduceLeftSpeed;
+			double rightSpeed = 0.7*controller.getRawAxis(1)+reduceRightSpeed;	
 			leftSideDrive.set(leftSpeed);
 			rightSideDrive.set(rightSpeed);
 		} 

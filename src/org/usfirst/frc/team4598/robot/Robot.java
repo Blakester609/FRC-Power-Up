@@ -211,30 +211,26 @@ public class Robot extends TimedRobot {
 	
 	/* Drive to the left switch plate without using the Limelight camera when starting in the 
 	 center player station */
-	private void autonomousOneWithoutLimelight() {
+	private void rightSwitchWithoutLimelight() {
 		gyro.reset();
 		autoCounter++;
-		if(autoCounter < 60 && autoCounter < 61) {
+		if(autoCounter < 60) {
 			leftSideDrive.set(0.4);
 			rightSideDrive.set(0);
 		}
 		gyro.reset();
-		if(autoCounter > 61 && autoCounter < 135) {
-			leftSideDrive.set(0.4);
-			rightSideDrive.set(-0.4);
-		} else if(autoCounter > 135 && autoCounter < 180) {
+		if(autoCounter > 60 && autoCounter < 160) {
+			leftSideDrive.set(0.4+(gyro.getAngle()* 0.015));
+			rightSideDrive.set(-0.4+(gyro.getAngle()*0.015));
+		} else if(autoCounter > 160 && autoCounter < 200) {
 			leftSideDrive.set(0);
 			rightSideDrive.set(-0.4);
 		}				
 		gyro.reset();
-		if(autoCounter > 180 && autoCounter < 260) {
+		if(autoCounter > 200 && autoCounter < 230) {
 			leftSideDrive.set(0.4+(gyro.getAngle()* 0.03));
 			rightSideDrive.set(-0.4+(gyro.getAngle()*0.1));
-		} else if(autoCounter > 260 && autoCounter < 285) {
-			leftSideDrive.set(0.4);
-			rightSideDrive.set(0);
-		}
-		else if(autoCounter > 285) {
+		} else if(autoCounter > 245) {
 			leftSideDrive.set(0);
 			rightSideDrive.set(0);
 		}
@@ -251,12 +247,25 @@ public class Robot extends TimedRobot {
 //		}
 	}
 	
-	private void driveStraight() {
+	private void driveStraightLeft() {
 		gyro.reset();
 		autoCounter++;
-		if(autoCounter < 300) {
-			leftSideDrive.set(0.4+(gyro.getAngle()* 0.6015));
-			rightSideDrive.set(-0.4+(gyro.getAngle()*0.6015));
+		if(autoCounter < 20) {
+			leftSideDrive.set(0.4);
+			rightSideDrive.set(0);
+		}
+		gyro.reset();
+		if(autoCounter > 20 && autoCounter < 70) {
+			leftSideDrive.set(0.4+(gyro.getAngle()* 0.03));
+			rightSideDrive.set(-0.4+(gyro.getAngle()*0.1));
+		} else if(autoCounter > 70 && autoCounter < 90) {
+			leftSideDrive.set(0);
+			rightSideDrive.set(-0.4);
+		}
+		gyro.reset();
+		if(autoCounter > 90 && autoCounter < 300) {
+			leftSideDrive.set(0.4+(gyro.getAngle()* 0.03));
+			rightSideDrive.set(-0.4+(gyro.getAngle()*0.1));
 		} else if(autoCounter > 300) {
 			leftSideDrive.set(0);
 			rightSideDrive.set(0);
@@ -266,11 +275,38 @@ public class Robot extends TimedRobot {
 		}
 
 	}
-
+	
+	private void driveStraightRight() {
+		gyro.reset();
+		autoCounter++;
+		if(autoCounter < 20) {
+			leftSideDrive.set(0);
+			rightSideDrive.set(-0.4);
+		}
+		gyro.reset();
+		if(autoCounter > 20 && autoCounter < 70) {
+			leftSideDrive.set(0.4+(gyro.getAngle()* 0.03));
+			rightSideDrive.set(-0.4+(gyro.getAngle()*0.1));
+		} else if(autoCounter > 70 && autoCounter < 90) {
+			leftSideDrive.set(4.0);
+			rightSideDrive.set(0);
+		}
+		gyro.reset();
+		if(autoCounter > 90 && autoCounter < 300) {
+			leftSideDrive.set(0.4+(gyro.getAngle()* 0.03));
+			rightSideDrive.set(-0.4+(gyro.getAngle()*0.1));
+		} else if(autoCounter > 300) {
+			leftSideDrive.set(0);
+			rightSideDrive.set(0);
+		} else {
+			leftSideDrive.set(0);
+			rightSideDrive.set(0);
+		}
+	}
 	
 	/* Drive to the right switch plate without using the Limelight camera when starting in the 
 	 center player station */
-	private void autonomousTwoWithoutLimelight() {
+	private void leftSwitchWithoutLimelight() {
 		gyro.reset();
 		autoCounter++;
 		if(autoCounter < 60) {
@@ -310,22 +346,35 @@ public class Robot extends TimedRobot {
 	private void scaleRightAndPlayerStationRight() {
 		gyro.reset();
 		autoCounter++;
-		if(autoCounter < 310) {
-			leftSideDrive.set(0.4+(gyro.getAngle()* 0.1));
-			rightSideDrive.set(-0.4+(gyro.getAngle()*0.1));
-		} else if(autoCounter > 310 && autoCounter < 325) {
-			leftSideDrive.set(4.0);
+		if(autoCounter < 20) {
+			leftSideDrive.set(0.4);
 			rightSideDrive.set(0);
+		}
+		gyro.reset();
+		if (autoCounter > 20 && autoCounter < 70) {
+			leftSideDrive.set(0.4+(gyro.getAngle()* 0.03));
+			rightSideDrive.set(-0.4+(gyro.getAngle()*0.1));
+		} else if(autoCounter > 70 && autoCounter < 90) {
+			leftSideDrive.set(0);
+			rightSideDrive.set(-0.4);
 		} 
 		gyro.reset();
-		if(autoCounter > 325 && autoCounter < 345) {
-			leftSideDrive.set(0.4+(gyro.getAngle()* 0.1));
+		if(autoCounter > 90 && autoCounter < 350) {
+			leftSideDrive.set(0.4+(gyro.getAngle()* 0.03));
+			rightSideDrive.set(-0.4+(gyro.getAngle()*0.1));
+		} else if(autoCounter > 350 && autoCounter < 365) {
+			leftSideDrive.set(0);
+			rightSideDrive.set(-0.4);
+		} 
+		gyro.reset();
+		if(autoCounter > 365 && autoCounter < 385) {
+			leftSideDrive.set(0.4+(gyro.getAngle()* 0.03));
 			rightSideDrive.set(-0.4+(gyro.getAngle()*0.1));
 		}
-		else if(autoCounter > 345) {
+		else if(autoCounter > 385) {
 			leftSideDrive.set(0);
 			rightSideDrive.set(0);
-		}
+		} 
 //		} else if(autoCounter > 345 && autoCounter < 415) {
 //			allThreadMotor.set(1.0);
 //		} else if(autoCounter > 415) {
@@ -348,19 +397,32 @@ public class Robot extends TimedRobot {
 	 {
 		gyro.reset();
 		autoCounter++;
-		if(autoCounter < 310) {
+		if(autoCounter < 20) {
+			leftSideDrive.set(0);
+			rightSideDrive.set(-0.4);
+		}
+		gyro.reset();
+		if (autoCounter > 20 && autoCounter < 70) {
 			leftSideDrive.set(0.4+(gyro.getAngle()* 0.03));
 			rightSideDrive.set(-0.4+(gyro.getAngle()*0.1));
-		} else if(autoCounter > 310 && autoCounter < 325) {
+		} else if(autoCounter > 70 && autoCounter < 90) {
+			leftSideDrive.set(0.4);
+			rightSideDrive.set(0);
+		} 
+		gyro.reset();
+		if(autoCounter > 90 && autoCounter < 350) {
+			leftSideDrive.set(0.4+(gyro.getAngle()* 0.03));
+			rightSideDrive.set(-0.4+(gyro.getAngle()*0.1));
+		} else if(autoCounter > 350 && autoCounter < 365) {
 			leftSideDrive.set(4.0);
 			rightSideDrive.set(0);
 		} 
 		gyro.reset();
-		if(autoCounter > 325 && autoCounter < 345) {
+		if(autoCounter > 365 && autoCounter < 385) {
 			leftSideDrive.set(0.4+(gyro.getAngle()* 0.03));
 			rightSideDrive.set(-0.4+(gyro.getAngle()*0.1));
 		}
-		else if(autoCounter > 345) {
+		else if(autoCounter > 385) {
 			leftSideDrive.set(0);
 			rightSideDrive.set(0);
 		} 
@@ -515,25 +577,26 @@ public class Robot extends TimedRobot {
 		switch (autoCommand) {
 			case "autonomous 1":
 //				autonomousOneWithLimelight();
-				autonomousOneWithoutLimelight();
+				rightSwitchWithoutLimelight();
 				break;
 			case "autonomous 2":
 //				autonomousTwoWithLimelight();
-				autonomousTwoWithoutLimelight();
+				leftSwitchWithoutLimelight();
 				break;
 			case "autonomous 3":
-				scaleLeftAndPlayerStationRight();
+				driveStraightRight();
+//				scaleLeftAndPlayerStationRight();
 				break;
 			case "autonomous 4":
 				scaleRightAndPlayerStationRight();
 				break;
 			case "autonomous 5":
 //				scaleRightAndPlayerStationLeft();
-				driveStraight();
+				scaleLeftAndPlayerStationLeft();
 				break;
 			case "autonomous 6":
 //				scaleLeftAndPlayerStationLeft();
-				driveStraight();
+				driveStraightLeft();
 				break;
 			}
 	}

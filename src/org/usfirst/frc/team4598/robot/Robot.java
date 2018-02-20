@@ -220,14 +220,14 @@ public class Robot extends TimedRobot {
 		}
 		gyro.reset();
 		if(autoCounter > 61 && autoCounter < 135) {
-			leftSideDrive.set(0.4+(gyro.getAngle()* 0.015));
-			rightSideDrive.set(-0.4+(gyro.getAngle()*0.015));
-		} else if(autoCounter > 120 && autoCounter < 165) {
+			leftSideDrive.set(0.4);
+			rightSideDrive.set(-0.4);
+		} else if(autoCounter > 135 && autoCounter < 180) {
 			leftSideDrive.set(0);
 			rightSideDrive.set(-0.4);
 		}				
 		gyro.reset();
-		if(autoCounter > 180 && autoCounter < 20) {
+		if(autoCounter > 180 && autoCounter < 260) {
 			leftSideDrive.set(0.4+(gyro.getAngle()* 0.03));
 			rightSideDrive.set(-0.4+(gyro.getAngle()*0.1));
 		} else if(autoCounter > 260 && autoCounter < 285) {
@@ -238,17 +238,17 @@ public class Robot extends TimedRobot {
 			leftSideDrive.set(0);
 			rightSideDrive.set(0);
 		}
-		if(autoCounter > 285 && autoCounter < 325) {
-			winchMotor.set(-1.0);
-		} else if(autoCounter > 325) {
-			winchMotor.set(0);
-		} else if(autoCounter > 325 && autoCounter < 345) {
-			clawMotor1.set(-1.0);
-			clawMotor2.set(-1.0);
-		} else if(autoCounter > 345) {
-			clawMotor1.set(0);
-			clawMotor2.set(0);
-		}
+//		if(autoCounter > 285 && autoCounter < 325) {
+//			winchMotor.set(-1.0);
+//		} else if(autoCounter > 325) {
+//			winchMotor.set(0);
+//		} else if(autoCounter > 325 && autoCounter < 345) {
+//			clawMotor1.set(-1.0);
+//			clawMotor2.set(-1.0);
+//		} else if(autoCounter > 345) {
+//			clawMotor1.set(0);
+//			clawMotor2.set(0);
+//		}
 	}
 	
 	private void driveStraight() {
@@ -273,37 +273,37 @@ public class Robot extends TimedRobot {
 	private void autonomousTwoWithoutLimelight() {
 		gyro.reset();
 		autoCounter++;
-		if(autoCounter < 40) {
+		if(autoCounter < 60) {
 			leftSideDrive.set(0);
 			rightSideDrive.set(-0.4);
 		}
 		gyro.reset();
-		if(autoCounter > 40 && autoCounter < 140) {
+		if(autoCounter > 60 && autoCounter < 160) {
 			leftSideDrive.set(0.4+(gyro.getAngle()* 0.015));
 			rightSideDrive.set(-0.4+(gyro.getAngle()*0.015));
-		} else if(autoCounter > 140 && autoCounter < 180) {
+		} else if(autoCounter > 160 && autoCounter < 200) {
 			leftSideDrive.set(0.4);
 			rightSideDrive.set(0);
 		}				
 		gyro.reset();
-		if(autoCounter > 180 && autoCounter < 245) {
+		if(autoCounter > 200 && autoCounter < 230) {
 			leftSideDrive.set(0.4+(gyro.getAngle()* 0.03));
 			rightSideDrive.set(-0.4+(gyro.getAngle()*0.1));
 		} else if(autoCounter > 245) {
 			leftSideDrive.set(0);
 			rightSideDrive.set(0);
 		}
-		if(autoCounter > 245 && autoCounter < 285) {
-			winchMotor.set(-1.0);
-		} else if(autoCounter > 285) {
-			winchMotor.set(0);
-		} else if(autoCounter > 285 && autoCounter < 305) {
-			clawMotor1.set(-1.0);
-			clawMotor2.set(-1.0);
-		} else if(autoCounter > 305) {
-			clawMotor1.set(0);
-			clawMotor2.set(0);
-		}
+//		if(autoCounter > 210 && autoCounter < 260) {
+//			winchMotor.set(-1.0);
+//		} else if(autoCounter > 285) {
+//			winchMotor.set(0);
+//		} else if(autoCounter > 260 && autoCounter < 270) {
+//			clawMotor1.set(-1.0);
+//			clawMotor2.set(-1.0);
+//		} else if(autoCounter > 270) {
+//			clawMotor1.set(0);
+//			clawMotor2.set(0);
+//		}
 	}
 
 	// Drive to the scale right plate when in the right player station
@@ -325,21 +325,22 @@ public class Robot extends TimedRobot {
 		else if(autoCounter > 345) {
 			leftSideDrive.set(0);
 			rightSideDrive.set(0);
-		} else if(autoCounter > 345 && autoCounter < 415) {
-			allThreadMotor.set(1.0);
-		} else if(autoCounter > 415) {
-			allThreadMotor.set(0);
-		} else if(autoCounter > 415 && autoCounter < 515) {
-			winchMotor.set(-1.0);
-		} else if(autoCounter > 415) {
-			winchMotor.set(0);
-		} else if(autoCounter > 415 && autoCounter < 450) {
-			clawMotor1.set(-1.0);
-			clawMotor2.set(-1.0);
-		} else if(autoCounter < 450) {
-			clawMotor1.set(0);
-			clawMotor2.set(0);
 		}
+//		} else if(autoCounter > 345 && autoCounter < 415) {
+//			allThreadMotor.set(1.0);
+//		} else if(autoCounter > 415) {
+//			allThreadMotor.set(0);
+//		} else if(autoCounter > 415 && autoCounter < 515) {
+//			winchMotor.set(-1.0);
+//		} else if(autoCounter > 415) {
+//			winchMotor.set(0);
+//		} else if(autoCounter > 415 && autoCounter < 450) {
+//			clawMotor1.set(-1.0);
+//			clawMotor2.set(-1.0);
+//		} else if(autoCounter < 450) {
+//			clawMotor1.set(0);
+//			clawMotor2.set(0);
+//		}
 	}
 	
 	// Drive to the scale left plate when in the left player station
@@ -362,21 +363,22 @@ public class Robot extends TimedRobot {
 		else if(autoCounter > 345) {
 			leftSideDrive.set(0);
 			rightSideDrive.set(0);
-		} else if(autoCounter > 345 && autoCounter < 415) {
-			allThreadMotor.set(1.0);
-		} else if(autoCounter > 415) {
-			allThreadMotor.set(0);
-		} else if(autoCounter > 415 && autoCounter < 515) {
-			winchMotor.set(-1.0);
-		} else if(autoCounter > 515) {
-			winchMotor.set(0);
-		} else if(autoCounter > 515 && autoCounter < 550) {
-			clawMotor1.set(-1.0);
-			clawMotor2.set(-1.0);
-		} else if(autoCounter > 550) {
-			clawMotor1.set(0);
-			clawMotor2.set(0);
-		}
+		} 
+//		else if(autoCounter > 345 && autoCounter < 415) {
+//			allThreadMotor.set(1.0);
+//		} else if(autoCounter > 415) {
+//			allThreadMotor.set(0);
+//		} else if(autoCounter > 415 && autoCounter < 515) {
+//			winchMotor.set(-1.0);
+//		} else if(autoCounter > 515) {
+//			winchMotor.set(0);
+//		} else if(autoCounter > 515 && autoCounter < 550) {
+//			clawMotor1.set(-1.0);
+//			clawMotor2.set(-1.0);
+//		} else if(autoCounter > 550) {
+//			clawMotor1.set(0);
+//			clawMotor2.set(0);
+//		}
 	}
 	
 	// Drive to the left scale plate when starting in the right player station
@@ -478,10 +480,10 @@ public class Robot extends TimedRobot {
 		System.out.println("Player Station: " + playerStation);
 		if(playerStation == blue2 || playerStation == red2) {
 			if(gameData.length() > 0) {
-				if(gameData.charAt(0) == 'L') {
+				if(gameData.charAt(0) == 'R') {
 						autoCommand = "autonomous 1";
 				}
-				if(gameData.charAt(0) == 'R') {
+				if(gameData.charAt(0) == 'L') {
 					autoCommand = "autonomous 2";
 				}
 			}
@@ -573,25 +575,25 @@ public class Robot extends TimedRobot {
 		}
 		// Dime turn
 		if(controller.getRawButton(5)) {
-			leftSideDrive.set(-0.25);
-			rightSideDrive.set(-0.25);
+			leftSideDrive.set(-0.6);
+			rightSideDrive.set(-0.6);
 
 		} else if(controller.getRawButton(6)) {
-			leftSideDrive.set(0.25);
-			rightSideDrive.set(0.25);
+			leftSideDrive.set(0.6);
+			rightSideDrive.set(0.6);
 
 		}
 		
 		
 		// Winch Control
 		if(controller.getAButton()) {
-			winchMotor.set(-0.6);
-		} else if(controller.getBButton()) {
-			winchMotor.set(0.6);
-		} else if(controller.getXButton()) {
 			winchMotor.set(-1.0);
-		} else if(controller.getYButton()) {
+		} else if(controller.getBButton()) {
 			winchMotor.set(1.0);
+//		} else if(controller.getXButton()) {
+//			winchMotor.set(-0.6);
+//		} else if(controller.getYButton()) {
+//			winchMotor.set(0.6);
 		} else {
 			winchMotor.set(0);
 		}
@@ -615,17 +617,18 @@ public class Robot extends TimedRobot {
 //			allThreadMotor.set(0.4); 
 //		} else if((controller.getBButton() && controller.getRawAxis(3) == 1.0) && allThreadMotionDown == true) {
 //			allThreadMotor.set(-0.4);
-//		} else if((controller.getXButton() && controller.getRawAxis(3) == 1.0) && allThreadMotionUp == true) {
-//			allThreadMotor.set(1.0);
-//		} else if((controller.getYButton() && controller.getRawAxis(3) == 1.0) && allThreadMotionDown == true) {
-//			allThreadMotor.set(-1.0);
-//		} else if(allThreadMotionDown == false) {
-//			allThreadMotor.set(0);
-//		} else if(allThreadMotionUp == false) {
-//			allThreadMotor.set(0);
-//		} else {
-//			allThreadMotor.set(0);
-//		}
+//		} else
+		if((controller.getXButton()) && allThreadMotionUp == true) {
+			allThreadMotor.set(1.0);
+		} else if((controller.getYButton()) && allThreadMotionDown == true) {
+			allThreadMotor.set(-1.0);
+		} else if(allThreadMotionDown == false) {
+			allThreadMotor.set(0);
+		} else if(allThreadMotionUp == false) {
+			allThreadMotor.set(0);
+		} else {
+			allThreadMotor.set(0);
+		}
 		
 //		if(controller.getAButton()) {
 //			allThreadMotor.set(0.4);

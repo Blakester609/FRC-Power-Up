@@ -126,11 +126,6 @@ public class Robot extends TimedRobot {
 		playerStationChooser.addObject("Blue 3", blue3);
 		SmartDashboard.putData("Player Stations", playerStationChooser);
 		gameData = DriverStation.getInstance().getGameSpecificMessage();
-		
-		rightDrive1.setSafetyEnabled(false);
-		rightDrive2.setSafetyEnabled(false);
-		leftDrive1.setSafetyEnabled(false);
-		leftDrive2.setSafetyEnabled(false);
 		autoCounter = 0;
 	}
 	
@@ -167,45 +162,59 @@ public class Robot extends TimedRobot {
 	
 	/* Drive to the left switch plate using the limelight camera when starting in the center
 	 player station */
-	private void autonomousOneWithLimelight() {
+	private void rightSwitchWithLimelight() {
 		autoCounter++;
 		if(autoCounter < 50 && autoCounter < 51) {
+			winchMotor.set(1.0);
+		} 
+		if(autoCounter > 51 && autoCounter < 100) {
 			leftSideDrive.set(0.4);
 			rightSideDrive.set(0);
 		} 
 		gyro.reset();
-		if(autoCounter > 52 && autoCounter < 152) {
+		if(autoCounter > 100 && autoCounter < 200) {
 			leftSideDrive.set(0.4+(gyro.getAngle()* 0.015));
 			rightSideDrive.set(-0.4+(gyro.getAngle()*0.015));
-		} else if(autoCounter > 153 && autoCounter < 172) {
+		} else if(autoCounter > 200 && autoCounter < 220) {
 			leftSideDrive.set(0);
 			rightSideDrive.set(-0.4);
 		}
 		gyro.reset();
-		if(autoCounter > 202 && autoCounter < 282) {
+		if(autoCounter > 200 && autoCounter < 750) {
 			visionTrackingLeft();
+			if(ta.getDouble(0) >= 20.0) {
+				clawMotor1.set(1.0);
+				clawMotor2.set(-1.0);
+			}
 		}
 	}
 	
 	/* Drive to the right switch plate using the limelight camera when starting in the center
 	player station */
-	private void autonomousTwoWithLimelight() {
+	private void leftSwitchWithLimelight() {
 		autoCounter++;
-		if(autoCounter < 20 && autoCounter < 21) {
+		if(autoCounter < 50 && autoCounter < 51) {
+			winchMotor.set(1.0);
+		} 
+		if(autoCounter > 51 && autoCounter < 100) {
 			leftSideDrive.set(0);
 			rightSideDrive.set(-0.4);
 		}
 		gyro.reset();
-		if(autoCounter > 22 && autoCounter < 72) {
+		if(autoCounter > 100 && autoCounter < 200) {
 			leftSideDrive.set(0.4+(gyro.getAngle()* 0.015));
 			rightSideDrive.set(-0.4+(gyro.getAngle()*0.015));
-		} else if(autoCounter > 72 && autoCounter < 132) {
+		} else if(autoCounter > 200 && autoCounter < 220) {
 			leftSideDrive.set(0.4);
 			rightSideDrive.set(0);
 		}				
 		gyro.reset();
-		if(autoCounter > 132 && autoCounter < 892) {
-			visionTrackingLeft();
+		if(autoCounter > 200 && autoCounter < 750) {
+			visionTrackingRight();
+			if(ta.getDouble(0) >= 20.0) {
+				clawMotor1.set(1.0);
+				clawMotor2.set(-1.0);
+			}
 		}
 	}
 	
@@ -576,11 +585,11 @@ public class Robot extends TimedRobot {
 		camMode.setNumber(0);
 		switch (autoCommand) {
 			case "autonomous 1":
-//				autonomousOneWithLimelight();
+//				rightSwitchWithLimelight();
 				rightSwitchWithoutLimelight();
 				break;
 			case "autonomous 2":
-//				autonomousTwoWithLimelight();
+//				leftSwitchWithLimelight();
 				leftSwitchWithoutLimelight();
 				break;
 			case "autonomous 3":
@@ -626,7 +635,7 @@ public class Robot extends TimedRobot {
 			reduceRightSpeed = 0;
 		}
 		
-		if(controller.getRawAxis(1) != 0 && controller.getRawAxis(0) != 0) {
+		if(controller.getRawAxis(1) != 0) {
 			double leftSpeed = -0.7*controller.getRawAxis(1)+reduceLeftSpeed;
 			double rightSpeed = 0.7*controller.getRawAxis(1)+reduceRightSpeed;	
 			leftSideDrive.set(leftSpeed);
@@ -681,17 +690,28 @@ public class Robot extends TimedRobot {
 //		} else if((controller.getBButton() && controller.getRawAxis(3) == 1.0) && allThreadMotionDown == true) {
 //			allThreadMotor.set(-0.4);
 //		} else
-		if((controller.getXButton()) && allThreadMotionUp == true) {
-			allThreadMotor.set(1.0);
-		} else if((controller.getYButton()) && allThreadMotionDown == true) {
-			allThreadMotor.set(-1.0);
-		} else if(allThreadMotionDown == false) {
-			allThreadMotor.set(0);
-		} else if(allThreadMotionUp == false) {
-			allThreadMotor.set(0);
+		if(limitAllThreadDown != null && limitAllThreadUp != null) {
+			if((controller.getXButton()) && allThreadMotionUp == true) {
+				allThreadMotor.set(1.0);
+			} else if((controller.getYButton()) && allThreadMotionDown == true) {
+				allThreadMotor.set(-1.0);
+			} else if(allThreadMotionDown == false) {
+				allThreadMotor.set(0);
+			} else if(allThreadMotionUp == false) {
+				allThreadMotor.set(0);
+			} else {
+				allThreadMotor.set(0);
+			}
 		} else {
-			allThreadMotor.set(0);
+			if(controller.getXButton()) {
+				allThreadMotor.set(1.0);
+			} else if(controller.getYButton()) {
+				allThreadMotor.set(-1.0);
+			} else {
+				allThreadMotor.set(0);
+			}
 		}
+		
 		
 //		if(controller.getAButton()) {
 //			allThreadMotor.set(0.4);
@@ -706,16 +726,19 @@ public class Robot extends TimedRobot {
 //		}
 		
 		//Cube Intake
-		if(controller.getRawAxis(2) == 1.0) {
-			clawMotor1.set(1);
-			clawMotor2.set(1);
-		} else if(controller.getRawAxis(3) == 1.0) {
-			clawMotor1.set(-1);
-			clawMotor2.set(-1);
-		} else {
-			clawMotor1.set(0);
-			clawMotor2.set(0);
-		}	
+//		if(controller.getRawAxis(2) == 1.0) {
+//			clawMotor1.set(1.0);
+//			clawMotor2.set(1.0);
+//		} else if(controller.getRawAxis(3) == 1.0) {
+//			clawMotor1.set(-1.0);
+//			clawMotor2.set(-1.0);
+//		} else {
+//			clawMotor1.set(0);
+//			clawMotor2.set(0);
+//		}	
+		
+		clawMotor1.set(controller.getRawAxis(2));
+		clawMotor2.set(-controller.getRawAxis(3));
 		
 	}
 

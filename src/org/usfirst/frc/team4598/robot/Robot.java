@@ -83,6 +83,7 @@ public class Robot extends TimedRobot {
 	
 	private Victor clawMotor1 = new Victor(4);
 	private Victor clawMotor2 = new Victor(6);
+	private SpeedControllerGroup cubeIntake = new SpeedControllerGroup(clawMotor1, clawMotor2);
 	
 	DigitalInput limitAllThreadUp = new DigitalInput(1);
 	DigitalInput limitAllThreadDown = new DigitalInput(2);
@@ -127,6 +128,12 @@ public class Robot extends TimedRobot {
 	
 	private boolean autoEnabled;
 	private boolean teleOpEnabled;
+	
+	private double leftStickY = controller.getRawAxis(1);
+	private double leftStickX = controller.getRawAxis(0);
+	private double rightStickY = controller.getRawAxis(5);
+	private double leftTrigger = controller.getRawAxis(2);
+	private double rightTrigger = controller.getRawAxis(3);
 	
 	/**
 	 * This function is run when the robot is first started up and should be
@@ -203,8 +210,7 @@ public class Robot extends TimedRobot {
 		if(autoCounter > 225 && autoCounter < 750) {
 			visionTrackingLeft();
 			if(ta.getDouble(0) >= 5.0) {
-				clawMotor1.set(-1.0);
-				clawMotor2.set(-1.0);
+				cubeIntake.set(-1.0);
 			}
 		}
 	}
@@ -232,8 +238,7 @@ public class Robot extends TimedRobot {
 		if(autoCounter > 200 && autoCounter < 750) {
 			visionTrackingRight();
 			if(ta.getDouble(0) >= 20.0) {
-				clawMotor1.set(1.0);
-				clawMotor2.set(-1.0);
+				cubeIntake.set(-1.0);
 			}
 		}
 	}
@@ -275,11 +280,9 @@ public class Robot extends TimedRobot {
 		}
 		gyro.reset();
 		if(autoCounter > 440 && autoCounter < 500) {
-			clawMotor1.set(-0.6);
-			clawMotor2.set(-0.6);
+			cubeIntake.set(-0.6);
 		} else if(autoCounter > 500) {
-			clawMotor1.set(0);
-			clawMotor2.set(0);
+			cubeIntake.set(0);
 		}
 	}
 	
@@ -320,11 +323,9 @@ public class Robot extends TimedRobot {
 			} 
 			gyro.reset();
 			if(autoCounter > 390 && autoCounter < 500) {
-				clawMotor1.set(-0.6);
-				clawMotor2.set(-0.6);
+				cubeIntake.set(-0.6);
 			} else if(autoCounter > 500) {
-				clawMotor1.set(0);
-				clawMotor2.set(0);
+				cubeIntake.set(0);
 			}
 		}
 
@@ -390,7 +391,7 @@ public class Robot extends TimedRobot {
 		autoCounter++;
 		if(autoCounter < numIterations) {
 			leftSideDrive.set(0.4);
-			rightSideDrive.set(-0.4);
+			rightSideDrive.set(-0.5);
 		} else if(autoCounter > numIterations) {
 			leftSideDrive.set(0);
 			rightSideDrive.set(0);
@@ -454,8 +455,7 @@ public class Robot extends TimedRobot {
 		} else if(autoCounter > 650) {
 			liftMotor.set(ControlMode.PercentOutput, 0);
 		} else if(autoCounter > 650 && autoCounter < 700) {
-			clawMotor1.set(-1.0);
-			clawMotor2.set(-1.0);
+			cubeIntake.set(-0.6);
 		}
 	}
 	
@@ -518,8 +518,7 @@ public class Robot extends TimedRobot {
 		} else if(autoCounter > 650) {
 			liftMotor.set(ControlMode.PercentOutput, 0);
 		} else if(autoCounter > 650 && autoCounter < 700) {
-			clawMotor1.set(-1.0);
-			clawMotor2.set(-1.0);
+			cubeIntake.set(-0.6);
 		}
 	}
 	
@@ -568,11 +567,9 @@ public class Robot extends TimedRobot {
 		} else if(autoCounter > 590) {
 			liftMotor.set(ControlMode.PercentOutput, 0);
 		} else if(autoCounter > 590 && autoCounter < 625) {
-			clawMotor1.set(-1.0);
-			clawMotor2.set(-1.0);
+			cubeIntake.set(-0.6);
 		} else if(autoCounter > 625) {
-			clawMotor1.set(0);
-			clawMotor2.set(0);
+			cubeIntake.set(0);
 		}
 	}
 	
@@ -621,11 +618,9 @@ public class Robot extends TimedRobot {
 		} else if(autoCounter > 590) {
 			liftMotor.set(ControlMode.PercentOutput, 0);
 		} else if(autoCounter > 590 && autoCounter < 625) {
-			clawMotor1.set(-1.0);
-			clawMotor2.set(-1.0);
+			cubeIntake.set(-0.6);
 		} else if(autoCounter > 625) {
-			clawMotor1.set(0);
-			clawMotor2.set(0);
+			cubeIntake.set(0);
 		}
 		
 	}
@@ -671,8 +666,7 @@ public class Robot extends TimedRobot {
 		} else if(autoCounter > 190) {
 			liftMotor.set(ControlMode.PercentOutput, 0);
 		} else if(autoCounter > 190 && autoCounter < 240) {
-			clawMotor1.set(-1.0);
-			clawMotor2.set(-1.0);
+			cubeIntake.set(-0.6);
 		}
 	}
 	
@@ -703,8 +697,7 @@ public class Robot extends TimedRobot {
 		} else if(autoCounter > 190) {
 			liftMotor.set(ControlMode.PercentOutput, 0);
 		} else if(autoCounter > 190 && autoCounter < 240) {
-			clawMotor1.set(-1.0);
-			clawMotor2.set(-1.0);
+			cubeIntake.set(-0.6);
 		}
 	}
 	
@@ -869,20 +862,20 @@ public class Robot extends TimedRobot {
 		double reduceLeftSpeed = 0;
 		double reduceRightSpeed = 0;
 		
-		if(controller.getRawAxis(1) < -0.01) {
-			reduceLeftSpeed += controller.getRawAxis(0)*0.225;
-			reduceRightSpeed += controller.getRawAxis(0)*0.225;
-		} else if(controller.getRawAxis(1) > 0.01) {
-			reduceLeftSpeed -= controller.getRawAxis(0)*0.225;
-			reduceRightSpeed -= controller.getRawAxis(0)*0.225;
+		if(leftStickY < -0.01) {
+			reduceLeftSpeed += leftStickX*0.225;
+			reduceRightSpeed += leftStickX*0.225;
+		} else if(leftStickY > 0.01) {
+			reduceLeftSpeed -= leftStickX*0.225;
+			reduceRightSpeed -= leftStickX*0.225;
 		} else {
 			reduceLeftSpeed = 0;
 			reduceRightSpeed = 0;
 		}
 		
-		if(controller.getRawAxis(1) != 0) {
-			double leftSpeed = -0.7*controller.getRawAxis(1)+reduceLeftSpeed;
-			double rightSpeed = 0.7*controller.getRawAxis(1)+reduceRightSpeed;	
+		if(leftStickY != 0) {
+			double leftSpeed = -0.7*leftStickY+reduceLeftSpeed;
+			double rightSpeed = 0.7*leftStickY+reduceRightSpeed;	
 			leftSideDrive.set(leftSpeed);
 			rightSideDrive.set(rightSpeed);
 		} 
@@ -920,9 +913,9 @@ public class Robot extends TimedRobot {
 		
 		
 		// All Thread Control
-//		if((controller.getAButton() && controller.getRawAxis(3) == 1.0) && allThreadMotionUp == true) {
+//		if((controller.getAButton() && rightTrigger == 1.0) && allThreadMotionUp == true) {
 //			climbingWinch.set(0.4); 
-//		} else if((controller.getBButton() && controller.getRawAxis(3) == 1.0) && allThreadMotionDown == true) {
+//		} else if((controller.getBButton() && rightTrigger == 1.0) && allThreadMotionDown == true) {
 //			climbingWinch.set(-0.4);
 //		} else
 //		if(limitAllThreadDown != null && limitAllThreadUp != null) {
@@ -970,10 +963,10 @@ public class Robot extends TimedRobot {
 //		}
 		
 //		if(limitAllThreadDown != null && limitAllThreadUp != null) {
-//			if((controller.getRawAxis(5) > 0.1) && allThreadMotionDown == true) {
-//				climbingWinch.set(-controller.getRawAxis(5));
-//			} else if((controller.getRawAxis(5) < 0.1) && allThreadMotionUp == true) {
-//				climbingWinch.set(-controller.getRawAxis(5));
+//			if((rightStickY > 0.1) && allThreadMotionDown == true) {
+//				climbingWinch.set(-rightStickY);
+//			} else if((rightStickY < 0.1) && allThreadMotionUp == true) {
+//				climbingWinch.set(-rightStickY);
 //			} else if(allThreadMotionDown == false) {
 //				climbingWinch.set(0);
 //			} else if(allThreadMotionUp == false) {
@@ -982,10 +975,10 @@ public class Robot extends TimedRobot {
 //				climbingWinch.set(0);
 //			}
 //		} else if(limitAllThreadDown == null || limitAllThreadUp == null) {
-//			if(controller.getRawAxis(5) > 0.1) {
-//				climbingWinch.set(-controller.getRawAxis(5));
-//			} else if(controller.getRawAxis(5) < 0.1) {
-//				climbingWinch.set(-controller.getRawAxis(5));
+//			if(rightStickY > 0.1) {
+//				climbingWinch.set(-rightStickY);
+//			} else if(rightStickY < 0.1) {
+//				climbingWinch.set(-rightStickY);
 //			} else {
 //				climbingWinch.set(0);
 //			}
@@ -1010,10 +1003,10 @@ public class Robot extends TimedRobot {
 //		}
 		
 		//Cube Intake
-//		if(controller.getRawAxis(2) == 1.0) {
+//		if(leftTrigger == 1.0) {
 //			clawMotor1.set(1.0);
 //			clawMotor2.set(1.0);
-//		} else if(controller.getRawAxis(3) == 1.0) {
+//		} else if(rightTrigger == 1.0) {
 //			clawMotor1.set(-1.0);
 //			clawMotor2.set(-1.0);
 //		} else {
@@ -1021,31 +1014,31 @@ public class Robot extends TimedRobot {
 //			clawMotor2.set(0);
 //		}	
 		
-		if(controller.getRawAxis(3) > 0.15) {
-			clawMotor1.set(controller.getRawAxis(3));
-			clawMotor2.set(controller.getRawAxis(3));
-		} else if(controller.getRawAxis(2) > 0.1) {
-			clawMotor1.set(-controller.getRawAxis(2));
-			clawMotor2.set(-controller.getRawAxis(2));
+		if(rightTrigger > 0.15) {
+			clawMotor1.set(rightTrigger);
+			clawMotor2.set(rightTrigger);
+		} else if(leftTrigger > 0.1) {
+			clawMotor1.set(-leftTrigger);
+			clawMotor2.set(-leftTrigger);
 		} else {
 			clawIdleIn();
 		}
 		
 		
 		
-		SmartDashboard.putNumber("RawAxis5", controller.getRawAxis(5));
+		SmartDashboard.putNumber("RawAxis5", rightStickY);
 		
-		if(selSenPos < 0 && (controller.getRawAxis(5) > 0.1 || (controller.getRawAxis(5) >= -0.1 && controller.getRawAxis(5) < 0.1))) {
+		if(selSenPos < 0 && (rightStickY > 0.1 || (rightStickY >= -0.1 && rightStickY < 0.1))) {
 			liftMotor.set(ControlMode.PercentOutput, 0);
-		} else if((selSenPos >= -40000 && selSenPos <= 0) && controller.getRawAxis(5) < 0.1) {
-				liftMotor.set(ControlMode.PercentOutput, controller.getRawAxis(5));
-		} else if(selSenPos >= 0 && (controller.getRawAxis(5) <= -0.1 || controller.getRawAxis(5) >= 0.1)) {
-			liftMotor.set(ControlMode.PercentOutput, controller.getRawAxis(5));
-		} else if(selSenPos > 68000  && (controller.getRawAxis(5) < 0.1 || (controller.getRawAxis(5) >= -0.1 && controller.getRawAxis(5) < 0.1))) {
+		} else if((selSenPos >= -40000 && selSenPos <= 0) && rightStickY < 0.1) {
+				liftMotor.set(ControlMode.PercentOutput, rightStickY);
+		} else if(selSenPos >= 0 && (rightStickY <= -0.1 || rightStickY >= 0.1)) {
+			liftMotor.set(ControlMode.PercentOutput, rightStickY);
+		} else if(selSenPos > 68000  && (rightStickY < 0.1 || (rightStickY >= -0.1 && rightStickY < 0.1))) {
 			liftMotor.set(ControlMode.PercentOutput, -0.15);
-		} else if((selSenPos >= 68000 && selSenPos <= 8000000) && controller.getRawAxis(5) < 0.1) {
-			liftMotor.set(ControlMode.PercentOutput, controller.getRawAxis(5));
-		} else if(selSenPos > 0 && (controller.getRawAxis(5) > -0.1 && controller.getRawAxis(5) < 0.1)) {
+		} else if((selSenPos >= 68000 && selSenPos <= 8000000) && rightStickY < 0.1) {
+			liftMotor.set(ControlMode.PercentOutput, rightStickY);
+		} else if(selSenPos > 0 && (rightStickY > -0.1 && rightStickY < 0.1)) {
 			liftMotor.set(ControlMode.PercentOutput, -0.15);
 		}
 		

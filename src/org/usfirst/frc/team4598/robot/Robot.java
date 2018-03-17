@@ -1005,16 +1005,18 @@ public class Robot extends TimedRobot {
 //			clawMotor2.set(0);
 //		}	
 		
-		if(controller.getRawAxis(3) > 0.1) {
+		if(controller.getRawAxis(3) > 0.15) {
 			clawMotor1.set(controller.getRawAxis(3));
 			clawMotor2.set(controller.getRawAxis(3));
 		} else if(controller.getRawAxis(2) > 0.1) {
 			clawMotor1.set(-controller.getRawAxis(2));
 			clawMotor2.set(-controller.getRawAxis(2));
 		} else {
-			clawMotor1.set(0);
-			clawMotor2.set(0);
+			clawMotor1.set(0.15);
+			clawMotor2.set(0.15);
 		}
+		
+		
 		
 		SmartDashboard.putNumber("RawAxis5", controller.getRawAxis(5));
 		
@@ -1024,8 +1026,7 @@ public class Robot extends TimedRobot {
 				winchMotor.set(ControlMode.PercentOutput, controller.getRawAxis(5));
 		} else if(selSenPos >= 0 && (controller.getRawAxis(5) <= -0.1 || controller.getRawAxis(5) >= 0.1)) {
 			winchMotor.set(ControlMode.PercentOutput, controller.getRawAxis(5));
-		}	
-		else if(selSenPos > 0 && (controller.getRawAxis(5) > -0.1 && controller.getRawAxis(5) < 0.1)) {
+		} else if(selSenPos > 0 && (controller.getRawAxis(5) > -0.1 && controller.getRawAxis(5) < 0.1)) {
 				winchMotor.set(ControlMode.PercentOutput, -0.15);
 		} 
 		

@@ -397,6 +397,11 @@ public class Robot extends TimedRobot {
 			rightSideDrive.set(0);
 		}
 	}
+	
+	private void driveStraightContinuing() {
+			leftSideDrive.set(0.4);
+			rightSideDrive.set(-0.5);
+	}
 
 	// Drive to the scale right plate when in the right player station
 	private void scaleRightAndPlayerStationRight() {

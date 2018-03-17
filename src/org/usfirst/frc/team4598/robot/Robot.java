@@ -61,32 +61,35 @@ public class Robot extends TimedRobot {
 	
 	private static int counter = 0;
 	//Victor rightDrive1 = new Victor(0);
-	Victor rightDrive1 = new Victor(0);
-	Victor rightDrive2 = new Victor(2);
+	private Victor rightDrive1 = new Victor(0);
+	private Victor rightDrive2 = new Victor(2);
 	public SpeedControllerGroup rightSideDrive = new SpeedControllerGroup(rightDrive1, rightDrive2);
 	
 	//Victor leftDrive1 = new Victor(1);
-	Victor leftDrive1 = new Victor(1);
-	Victor leftDrive2 = new Victor(3);
-	public SpeedControllerGroup leftSideDrive = new SpeedControllerGroup(leftDrive1, leftDrive2);
+	private Victor leftDrive1 = new Victor(1);
+	private Victor leftDrive2 = new Victor(3);
+	private SpeedControllerGroup leftSideDrive = new SpeedControllerGroup(leftDrive1, leftDrive2);
 	
 	
-	XboxController controller = new XboxController(1);
+	private XboxController controller = new XboxController(1);
 	
-	Victor allThreadMotor = new Victor(9);
-//	Victor winchMotor = new Victor(5);
+	private Victor climbingWinch = new Victor(9);
+//	Victor liftMotor = new Victor(5);
 	
-	private TalonSRX winchMotor = new TalonSRX(0);
+	private TalonSRX liftMotor = new TalonSRX(0);
 	
-	Victor clawMotor1 = new Victor(4);
-	Victor clawMotor2 = new Victor(6);
+	int selSenPos = liftMotor.getSelectedSensorPosition(0);
+	int pulseWidthWithoutOverflows = liftMotor.getSensorCollection().getPulseWidthPosition() & 0xFFF;
+	
+	private Victor clawMotor1 = new Victor(4);
+	private Victor clawMotor2 = new Victor(6);
 	
 	DigitalInput limitAllThreadUp = new DigitalInput(1);
 	DigitalInput limitAllThreadDown = new DigitalInput(2);
 	boolean allThreadMotionUp;
 	boolean allThreadMotionDown;
 	
-	ADXRS450_Gyro gyro  = new ADXRS450_Gyro(SPI.Port.kOnboardCS0);
+	private ADXRS450_Gyro gyro  = new ADXRS450_Gyro(SPI.Port.kOnboardCS0);
 	
 	public int autoCounter;
 	
@@ -122,7 +125,8 @@ public class Robot extends TimedRobot {
 	
 	final int kTimeoutMs = 10;
 	
-	
+	private boolean autoEnabled;
+	private boolean teleOpEnabled;
 	
 	/**
 	 * This function is run when the robot is first started up and should be
@@ -142,12 +146,12 @@ public class Robot extends TimedRobot {
 		SmartDashboard.putData("Switch or Scale?", switchOrScaleChooser);
 		gameData = DriverStation.getInstance().getGameSpecificMessage();
 		autoCounter = 0;
-		winchMotor.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, kTimeoutMs);
-		winchMotor.setSelectedSensorPosition(0, 0, 10);
+		liftMotor.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, kTimeoutMs);
+		liftMotor.setSelectedSensorPosition(0, 0, 10);
 	}
 	
 // **************************************Autonomous Methods************************************
-	public void visionTrackingRight() {
+	private void visionTrackingRight() {
 		if(tv.getDouble(0) == 1.0) {
 			leftSideDrive.set(0.4);
 			rightSideDrive.set(-0.4); 
@@ -162,7 +166,7 @@ public class Robot extends TimedRobot {
 		}
 	}
 	
-	public void visionTrackingLeft() {
+	private void visionTrackingLeft() {
 		if(tv.getDouble(0) == 1.0) {
 			leftSideDrive.set(0.4);
 			rightSideDrive.set(-0.4); 
@@ -182,9 +186,9 @@ public class Robot extends TimedRobot {
 	private void rightSwitchWithLimelight() {
 		autoCounter++;
 		if(autoCounter < 125) {
-			winchMotor.set(ControlMode.PercentOutput, 1.0);
+			liftMotor.set(ControlMode.PercentOutput, 1.0);
 		} else if(autoCounter > 125) {
-			winchMotor.set(ControlMode.PercentOutput, 0);
+			liftMotor.set(ControlMode.PercentOutput, 0);
 		}
 		if(autoCounter > 125 && autoCounter < 175) {
 			leftSideDrive.set(0.4);
@@ -210,7 +214,7 @@ public class Robot extends TimedRobot {
 	private void leftSwitchWithLimelight() {
 		autoCounter++;
 		if(autoCounter < 50 && autoCounter < 51) {
-			winchMotor.set(ControlMode.PercentOutput, 1.0);
+			liftMotor.set(ControlMode.PercentOutput, 1.0);
 		} 
 		if(autoCounter > 51 && autoCounter < 100) {
 			leftSideDrive.set(0);
@@ -240,9 +244,9 @@ public class Robot extends TimedRobot {
 		gyro.reset();
 		autoCounter++;
 		if(autoCounter < 120) {
-			winchMotor.set(ControlMode.PercentOutput, -1.0);
+			liftMotor.set(ControlMode.PercentOutput, -1.0);
 		} else if(autoCounter > 120) {
-			winchMotor.set(ControlMode.PercentOutput, 0.15);
+			liftMotor.set(ControlMode.PercentOutput, 0.15);
 		}
 		
 		if(autoCounter > 200 && autoCounter < 260) {
@@ -285,9 +289,9 @@ public class Robot extends TimedRobot {
 			gyro.reset();
 			autoCounter++;
 			if(autoCounter < 120) {
-				winchMotor.set(ControlMode.PercentOutput, -1.0);
+				liftMotor.set(ControlMode.PercentOutput, -1.0);
 			} else if(autoCounter > 120) {
-				winchMotor.set(ControlMode.PercentOutput, 0.15);
+				liftMotor.set(ControlMode.PercentOutput, 0.15);
 			}
 			
 			if(autoCounter > 200 && autoCounter < 260) {
@@ -381,13 +385,13 @@ public class Robot extends TimedRobot {
 		}
 	}
 	
-	private void driveStraight() {
+	private void driveStraight(int numIterations) {
 		gyro.reset();
 		autoCounter++;
-		if(autoCounter < 150) {
+		if(autoCounter < numIterations) {
 			leftSideDrive.set(0.4);
 			rightSideDrive.set(-0.4);
-		} else if(autoCounter > 150) {
+		} else if(autoCounter > numIterations) {
 			leftSideDrive.set(0);
 			rightSideDrive.set(0);
 		}
@@ -429,26 +433,26 @@ public class Robot extends TimedRobot {
 			limitSwitchesAllThreads();
 			if(limitAllThreadDown != null && limitAllThreadDown != null) {
 				if(allThreadMotionUp == true) {
-					allThreadMotor.set(1.0);
+					climbingWinch.set(1.0);
 				} else if(allThreadMotionDown == true) {
-					allThreadMotor.set(-1.0);
+					climbingWinch.set(-1.0);
 				} else if(allThreadMotionUp == false) {
-					allThreadMotor.set(0);
+					climbingWinch.set(0);
 				} else if(allThreadMotionDown == false) {
-					allThreadMotor.set(0);
+					climbingWinch.set(0);
 				}
 			} else if(limitAllThreadDown == null || limitAllThreadUp == null) {
 				if(autoCounter > 385 && autoCounter < 455) {
-					allThreadMotor.set(1.0);
+					climbingWinch.set(1.0);
 				} else if(autoCounter > 455) {
-					allThreadMotor.set(0);
+					climbingWinch.set(0);
 				}
 			}
 		}
 		else if(autoCounter > 600 && autoCounter < 650) {
-			winchMotor.set(ControlMode.PercentOutput, -1.0);
+			liftMotor.set(ControlMode.PercentOutput, -1.0);
 		} else if(autoCounter > 650) {
-			winchMotor.set(ControlMode.PercentOutput, 0);
+			liftMotor.set(ControlMode.PercentOutput, 0);
 		} else if(autoCounter > 650 && autoCounter < 700) {
 			clawMotor1.set(-1.0);
 			clawMotor2.set(-1.0);
@@ -493,26 +497,26 @@ public class Robot extends TimedRobot {
 			limitSwitchesAllThreads();
 			if(limitAllThreadDown != null && limitAllThreadDown != null) {
 				if(allThreadMotionUp == true) {
-					allThreadMotor.set(1.0);
+					climbingWinch.set(1.0);
 				} else if(allThreadMotionDown == true) {
-					allThreadMotor.set(-1.0);
+					climbingWinch.set(-1.0);
 				} else if(allThreadMotionUp == false) {
-					allThreadMotor.set(0);
+					climbingWinch.set(0);
 				} else if(allThreadMotionDown == false) {
-					allThreadMotor.set(0);
+					climbingWinch.set(0);
 				}
 			} else if(limitAllThreadDown == null || limitAllThreadUp == null) {
 				if(autoCounter > 385 && autoCounter < 455) {
-					allThreadMotor.set(1.0);
+					climbingWinch.set(1.0);
 				} else if(autoCounter > 455) {
-					allThreadMotor.set(0);
+					climbingWinch.set(0);
 				}
 			}
 		}
 		else if(autoCounter > 600 && autoCounter < 650) {
-			winchMotor.set(ControlMode.PercentOutput, -1.0);
+			liftMotor.set(ControlMode.PercentOutput, -1.0);
 		} else if(autoCounter > 650) {
-			winchMotor.set(ControlMode.PercentOutput, 0);
+			liftMotor.set(ControlMode.PercentOutput, 0);
 		} else if(autoCounter > 650 && autoCounter < 700) {
 			clawMotor1.set(-1.0);
 			clawMotor2.set(-1.0);
@@ -544,25 +548,25 @@ public class Robot extends TimedRobot {
 			limitSwitchesAllThreads();
 			if(limitAllThreadDown != null && limitAllThreadDown != null) {
 				if(allThreadMotionUp == true) {
-					allThreadMotor.set(1.0);
+					climbingWinch.set(1.0);
 				} else if(allThreadMotionDown == true) {
-					allThreadMotor.set(-1.0);
+					climbingWinch.set(-1.0);
 				} else if(allThreadMotionUp == false) {
-					allThreadMotor.set(0);
+					climbingWinch.set(0);
 				} else if(allThreadMotionDown == false) {
-					allThreadMotor.set(0);
+					climbingWinch.set(0);
 				}
 			} else if(limitAllThreadDown == null || limitAllThreadUp == null) {
 				if(autoCounter > 420 && autoCounter < 490) {
-					allThreadMotor.set(1.0);
+					climbingWinch.set(1.0);
 				} else if(autoCounter > 490) {
-					allThreadMotor.set(0);
+					climbingWinch.set(0);
 				}
 			}
 		} else if(autoCounter > 490 && autoCounter < 590) {
-			winchMotor.set(ControlMode.PercentOutput, -1.0);
+			liftMotor.set(ControlMode.PercentOutput, -1.0);
 		} else if(autoCounter > 590) {
-			winchMotor.set(ControlMode.PercentOutput, 0);
+			liftMotor.set(ControlMode.PercentOutput, 0);
 		} else if(autoCounter > 590 && autoCounter < 625) {
 			clawMotor1.set(-1.0);
 			clawMotor2.set(-1.0);
@@ -597,25 +601,25 @@ public class Robot extends TimedRobot {
 			limitSwitchesAllThreads();
 			if(limitAllThreadDown != null && limitAllThreadDown != null) {
 				if(allThreadMotionUp == true) {
-					allThreadMotor.set(1.0);
+					climbingWinch.set(1.0);
 				} else if(allThreadMotionDown == true) {
-					allThreadMotor.set(-1.0);
+					climbingWinch.set(-1.0);
 				} else if(allThreadMotionUp == false) {
-					allThreadMotor.set(0);
+					climbingWinch.set(0);
 				} else if(allThreadMotionDown == false) {
-					allThreadMotor.set(0);
+					climbingWinch.set(0);
 				}
 			} else if(limitAllThreadDown == null || limitAllThreadUp == null) {
 				if(autoCounter > 420 && autoCounter < 490) {
-					allThreadMotor.set(1.0);
+					climbingWinch.set(1.0);
 				} else if(autoCounter > 490) {
-					allThreadMotor.set(0);
+					climbingWinch.set(0);
 				}
 			}
 		} else if(autoCounter > 490 && autoCounter < 590) {
-			winchMotor.set(ControlMode.PercentOutput, -1.0);
+			liftMotor.set(ControlMode.PercentOutput, -1.0);
 		} else if(autoCounter > 590) {
-			winchMotor.set(ControlMode.PercentOutput, 0);
+			liftMotor.set(ControlMode.PercentOutput, 0);
 		} else if(autoCounter > 590 && autoCounter < 625) {
 			clawMotor1.set(-1.0);
 			clawMotor2.set(-1.0);
@@ -663,9 +667,9 @@ public class Robot extends TimedRobot {
 			leftSideDrive.set(0);
 		}
 		else if(autoCounter > 140 && autoCounter < 190) {
-			winchMotor.set(ControlMode.PercentOutput, -1.0);
+			liftMotor.set(ControlMode.PercentOutput, -1.0);
 		} else if(autoCounter > 190) {
-			winchMotor.set(ControlMode.PercentOutput, 0);
+			liftMotor.set(ControlMode.PercentOutput, 0);
 		} else if(autoCounter > 190 && autoCounter < 240) {
 			clawMotor1.set(-1.0);
 			clawMotor2.set(-1.0);
@@ -695,9 +699,9 @@ public class Robot extends TimedRobot {
 			leftSideDrive.set(0);
 		}
 		else if(autoCounter > 140 && autoCounter < 190) {
-			winchMotor.set(ControlMode.PercentOutput, -1.0);
+			liftMotor.set(ControlMode.PercentOutput, -1.0);
 		} else if(autoCounter > 190) {
-			winchMotor.set(ControlMode.PercentOutput, 0);
+			liftMotor.set(ControlMode.PercentOutput, 0);
 		} else if(autoCounter > 190 && autoCounter < 240) {
 			clawMotor1.set(-1.0);
 			clawMotor2.set(-1.0);
@@ -722,6 +726,16 @@ public class Robot extends TimedRobot {
 	
 //^^^^^^^^^^^^^^^^^^^^^^^^^Autonomous Methods^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+//************************************Control methods***********************************************//
+	private void clawIdleIn() {
+		clawMotor1.set(0.15);
+		clawMotor2.set(0.15);
+	}
+	
+	
+	
+	
+//^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^Control Methods^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^//
 	/**
 	 * This autonomous (along with the chooser code above) shows how to select
 	 * between different autonomous modes using the dashboard. The sendable
@@ -790,6 +804,8 @@ public class Robot extends TimedRobot {
 	 */
 	@Override
 	public void autonomousPeriodic() {
+		autoEnabled = true;
+		teleOpEnabled = false;
 		ledMode.setNumber(1);
 		camMode.setNumber(1);
 		switch (autoCommand) {
@@ -804,22 +820,22 @@ public class Robot extends TimedRobot {
 			case "autonomous 3":
 //				driveStraightRight();
 //				scaleLeftAndPlayerStationRight();
-				driveStraight();
+				driveStraight(150);
 				break;
 			case "autonomous 4":
 //				driveStraightRight();
 //				scaleRightAndPlayerStationRight();
-				driveStraight();
+				driveStraight(150);
 				break;
 			case "autonomous 5":
 //				driveStraightLeft();
 //				scaleLeftAndPlayerStationLeft();
-				driveStraight();
+				driveStraight(150);
 				break;
 			case "autonomous 6":
 //				scaleRightAndPlayerStationLeft();
 //				driveStraightLeft();
-				driveStraight();
+				driveStraight(150);
 				break;
 			case "autonomous 7":
 				break;
@@ -841,8 +857,8 @@ public class Robot extends TimedRobot {
 	 */
 	@Override
 	public void teleopPeriodic() {
-		int selSenPos = winchMotor.getSelectedSensorPosition(0);
-		int pulseWidthWithoutOverflows = winchMotor.getSensorCollection().getPulseWidthPosition() & 0xFFF;
+		autoEnabled = false;
+		teleOpEnabled = true;
 		
 		SmartDashboard.putNumber("pulseWidthPosition", pulseWidthWithoutOverflows);
 		SmartDashboard.putNumber("selSenPos", selSenPos);
@@ -888,15 +904,15 @@ public class Robot extends TimedRobot {
 		
 		// Winch Control
 //		if(controller.getAButton()) {
-//			winchMotor.set(-1.0);
+//			liftMotor.set(-1.0);
 //		} else if(controller.getBButton()) {
-//			winchMotor.set(1.0);
+//			liftMotor.set(1.0);
 //		} else if(controller.getXButton()) {
-//			winchMotor.set(-0.6);
+//			liftMotor.set(-0.6);
 //		} else if(controller.getYButton()) {
-//			winchMotor.set(0.6);
+//			liftMotor.set(0.6);
 //		} else {
-//			winchMotor.set(0);
+//			liftMotor.set(0);
 //		}
 //		
 //		limitSwitchesAllThreads();
@@ -905,73 +921,73 @@ public class Robot extends TimedRobot {
 		
 		// All Thread Control
 //		if((controller.getAButton() && controller.getRawAxis(3) == 1.0) && allThreadMotionUp == true) {
-//			allThreadMotor.set(0.4); 
+//			climbingWinch.set(0.4); 
 //		} else if((controller.getBButton() && controller.getRawAxis(3) == 1.0) && allThreadMotionDown == true) {
-//			allThreadMotor.set(-0.4);
+//			climbingWinch.set(-0.4);
 //		} else
 //		if(limitAllThreadDown != null && limitAllThreadUp != null) {
 //			if((controller.getXButton()) && allThreadMotionUp == true) {
-//				allThreadMotor.set(1.0);
+//				climbingWinch.set(1.0);
 //			} else if((controller.getYButton()) && allThreadMotionDown == true) {
-//				allThreadMotor.set(-1.0);
+//				climbingWinch.set(-1.0);
 //			} else if(allThreadMotionDown == false) {
-//				allThreadMotor.set(0);
+//				climbingWinch.set(0);
 //			} else if(allThreadMotionUp == false) {
-//				allThreadMotor.set(0);
+//				climbingWinch.set(0);
 //			} else {
-//				allThreadMotor.set(0);
+//				climbingWinch.set(0);
 //			}
 //		} else if(limitAllThreadDown == null || limitAllThreadUp == null) {
 //			if(controller.getXButton()) {
-//				allThreadMotor.set(1.0);
+//				climbingWinch.set(1.0);
 //			} else if(controller.getYButton()) {
-//				allThreadMotor.set(-1.0);
+//				climbingWinch.set(-1.0);
 //			} else {
-//				allThreadMotor.set(0);
+//				climbingWinch.set(0);
 //			}
 //		}
 		
 //		if(limitAllThreadDown != null && limitAllThreadUp != null) {
 //			if((controller.getXButton()) && allThreadMotionUp == true) {
-//				allThreadMotor.set(0.6);
+//				climbingWinch.set(0.6);
 //			} else if((controller.getYButton()) && allThreadMotionDown == true) {
-//				allThreadMotor.set(-0.6);
+//				climbingWinch.set(-0.6);
 //			} else if(allThreadMotionDown == false) {
-//				allThreadMotor.set(0);
+//				climbingWinch.set(0);
 //			} else if(allThreadMotionUp == false) {
-//				allThreadMotor.set(0);
+//				climbingWinch.set(0);
 //			} else {
-//				allThreadMotor.set(0);
+//				climbingWinch.set(0);
 //			}
 //		} else if(limitAllThreadDown == null || limitAllThreadUp == null) {
 //			if(controller.getXButton()) {
-//				allThreadMotor.set(0.7);
+//				climbingWinch.set(0.7);
 //			} else if(controller.getYButton()) {
-//				allThreadMotor.set(-1.0);
+//				climbingWinch.set(-1.0);
 //			} else {
-//				allThreadMotor.set(0);
+//				climbingWinch.set(0);
 //			}
 //		}
 		
 //		if(limitAllThreadDown != null && limitAllThreadUp != null) {
 //			if((controller.getRawAxis(5) > 0.1) && allThreadMotionDown == true) {
-//				allThreadMotor.set(-controller.getRawAxis(5));
+//				climbingWinch.set(-controller.getRawAxis(5));
 //			} else if((controller.getRawAxis(5) < 0.1) && allThreadMotionUp == true) {
-//				allThreadMotor.set(-controller.getRawAxis(5));
+//				climbingWinch.set(-controller.getRawAxis(5));
 //			} else if(allThreadMotionDown == false) {
-//				allThreadMotor.set(0);
+//				climbingWinch.set(0);
 //			} else if(allThreadMotionUp == false) {
-//				allThreadMotor.set(0);
+//				climbingWinch.set(0);
 //			} else {
-//				allThreadMotor.set(0);
+//				climbingWinch.set(0);
 //			}
 //		} else if(limitAllThreadDown == null || limitAllThreadUp == null) {
 //			if(controller.getRawAxis(5) > 0.1) {
-//				allThreadMotor.set(-controller.getRawAxis(5));
+//				climbingWinch.set(-controller.getRawAxis(5));
 //			} else if(controller.getRawAxis(5) < 0.1) {
-//				allThreadMotor.set(-controller.getRawAxis(5));
+//				climbingWinch.set(-controller.getRawAxis(5));
 //			} else {
-//				allThreadMotor.set(0);
+//				climbingWinch.set(0);
 //			}
 //		}
 		
@@ -982,15 +998,15 @@ public class Robot extends TimedRobot {
 		
 		
 //		if(controller.getAButton()) {
-//			allThreadMotor.set(0.4);
+//			climbingWinch.set(0.4);
 //		} else if(controller.getBButton()) {
-//			allThreadMotor.set(-0.4);
+//			climbingWinch.set(-0.4);
 //		} else if(controller.getXButton()) {
-//			allThreadMotor.set(0.6);
+//			climbingWinch.set(0.6);
 //		} else if(controller.getYButton()) {
-//			allThreadMotor.set(-0.6);
+//			climbingWinch.set(-0.6);
 //		} else {
-//			allThreadMotor.set(0);
+//			climbingWinch.set(0);
 //		}
 		
 		//Cube Intake
@@ -1012,8 +1028,7 @@ public class Robot extends TimedRobot {
 			clawMotor1.set(-controller.getRawAxis(2));
 			clawMotor2.set(-controller.getRawAxis(2));
 		} else {
-			clawMotor1.set(0.15);
-			clawMotor2.set(0.15);
+			clawIdleIn();
 		}
 		
 		
@@ -1021,14 +1036,28 @@ public class Robot extends TimedRobot {
 		SmartDashboard.putNumber("RawAxis5", controller.getRawAxis(5));
 		
 		if(selSenPos < 0 && (controller.getRawAxis(5) > 0.1 || (controller.getRawAxis(5) >= -0.1 && controller.getRawAxis(5) < 0.1))) {
-			winchMotor.set(ControlMode.PercentOutput, 0);
+			liftMotor.set(ControlMode.PercentOutput, 0);
 		} else if((selSenPos >= -40000 && selSenPos <= 0) && controller.getRawAxis(5) < 0.1) {
-				winchMotor.set(ControlMode.PercentOutput, controller.getRawAxis(5));
+				liftMotor.set(ControlMode.PercentOutput, controller.getRawAxis(5));
 		} else if(selSenPos >= 0 && (controller.getRawAxis(5) <= -0.1 || controller.getRawAxis(5) >= 0.1)) {
-			winchMotor.set(ControlMode.PercentOutput, controller.getRawAxis(5));
+			liftMotor.set(ControlMode.PercentOutput, controller.getRawAxis(5));
+		} else if(selSenPos > 68000  && (controller.getRawAxis(5) < 0.1 || (controller.getRawAxis(5) >= -0.1 && controller.getRawAxis(5) < 0.1))) {
+			liftMotor.set(ControlMode.PercentOutput, -0.15);
+		} else if((selSenPos >= 68000 && selSenPos <= 8000000) && controller.getRawAxis(5) < 0.1) {
+			liftMotor.set(ControlMode.PercentOutput, controller.getRawAxis(5));
 		} else if(selSenPos > 0 && (controller.getRawAxis(5) > -0.1 && controller.getRawAxis(5) < 0.1)) {
-				winchMotor.set(ControlMode.PercentOutput, -0.15);
-		} 
+			liftMotor.set(ControlMode.PercentOutput, -0.15);
+		}
+		
+		
+		if(controller.getAButton()) {
+			climbingWinch.set(-1.0);
+		} else if(controller.getBButton()) {
+			climbingWinch.set(1.0);
+		} else {
+			climbingWinch.set(0);
+		}
+		
 		
 		
 		

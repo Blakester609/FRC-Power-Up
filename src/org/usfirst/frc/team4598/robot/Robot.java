@@ -59,7 +59,6 @@ public class Robot extends TimedRobot {
 	double verticalOffset = ty.getDouble(0);
 	double targetArea = ta.getDouble(0);
 	
-	private static int counter = 0;
 	//Victor rightDrive1 = new Victor(0);
 	private Victor rightDrive1 = new Victor(0);
 	private Victor rightDrive2 = new Victor(2);
@@ -85,11 +84,6 @@ public class Robot extends TimedRobot {
 	private Victor clawMotor2 = new Victor(6);
 	private SpeedControllerGroup cubeIntake = new SpeedControllerGroup(clawMotor1, clawMotor2);
 	
-	DigitalInput limitAllThreadUp = new DigitalInput(1);
-	DigitalInput limitAllThreadDown = new DigitalInput(2);
-	boolean allThreadMotionUp;
-	boolean allThreadMotionDown;
-	
 	private ADXRS450_Gyro gyro  = new ADXRS450_Gyro(SPI.Port.kOnboardCS0);
 	
 	public int autoCounter;
@@ -98,11 +92,6 @@ public class Robot extends TimedRobot {
 	String gameData;
 	
 	String autoCommand;
-	
-	MotorSafetyHelper safetyRightDrive1 = new MotorSafetyHelper(rightDrive1);
-	MotorSafetyHelper safetyRightDrive2 = new MotorSafetyHelper(rightDrive2);
-	MotorSafetyHelper safetyLeftDrive1 = new MotorSafetyHelper(leftDrive1);
-	MotorSafetyHelper safetyLeftDrive2 = new MotorSafetyHelper(leftDrive2);
 	
 	private static final String red1 = AllianceStationID.Red1.toString();
 	private static final String red2 = AllianceStationID.Red2.toString();
@@ -436,24 +425,7 @@ public class Robot extends TimedRobot {
 			leftSideDrive.set(0);
 			rightSideDrive.set(0);
 		} else if(autoCounter > 385 && autoCounter < 750) {
-			limitSwitchesAllThreads();
-			if(limitAllThreadDown != null && limitAllThreadDown != null) {
-				if(allThreadMotionUp == true) {
-					climbingWinch.set(1.0);
-				} else if(allThreadMotionDown == true) {
-					climbingWinch.set(-1.0);
-				} else if(allThreadMotionUp == false) {
-					climbingWinch.set(0);
-				} else if(allThreadMotionDown == false) {
-					climbingWinch.set(0);
-				}
-			} else if(limitAllThreadDown == null || limitAllThreadUp == null) {
-				if(autoCounter > 385 && autoCounter < 455) {
-					climbingWinch.set(1.0);
-				} else if(autoCounter > 455) {
-					climbingWinch.set(0);
-				}
-			}
+			
 		}
 		else if(autoCounter > 600 && autoCounter < 650) {
 			liftMotor.set(ControlMode.PercentOutput, -1.0);
@@ -499,24 +471,7 @@ public class Robot extends TimedRobot {
 			rightSideDrive.set(0);
 		} 
 		else if(autoCounter > 385 && autoCounter < 750) {
-			limitSwitchesAllThreads();
-			if(limitAllThreadDown != null && limitAllThreadDown != null) {
-				if(allThreadMotionUp == true) {
-					climbingWinch.set(1.0);
-				} else if(allThreadMotionDown == true) {
-					climbingWinch.set(-1.0);
-				} else if(allThreadMotionUp == false) {
-					climbingWinch.set(0);
-				} else if(allThreadMotionDown == false) {
-					climbingWinch.set(0);
-				}
-			} else if(limitAllThreadDown == null || limitAllThreadUp == null) {
-				if(autoCounter > 385 && autoCounter < 455) {
-					climbingWinch.set(1.0);
-				} else if(autoCounter > 455) {
-					climbingWinch.set(0);
-				}
-			}
+			
 		}
 		else if(autoCounter > 600 && autoCounter < 650) {
 			liftMotor.set(ControlMode.PercentOutput, -1.0);
@@ -549,24 +504,7 @@ public class Robot extends TimedRobot {
 			leftSideDrive.set(0);
 			rightSideDrive.set(0);
 		} else if(autoCounter > 420 && autoCounter < 750) {
-			limitSwitchesAllThreads();
-			if(limitAllThreadDown != null && limitAllThreadDown != null) {
-				if(allThreadMotionUp == true) {
-					climbingWinch.set(1.0);
-				} else if(allThreadMotionDown == true) {
-					climbingWinch.set(-1.0);
-				} else if(allThreadMotionUp == false) {
-					climbingWinch.set(0);
-				} else if(allThreadMotionDown == false) {
-					climbingWinch.set(0);
-				}
-			} else if(limitAllThreadDown == null || limitAllThreadUp == null) {
-				if(autoCounter > 420 && autoCounter < 490) {
-					climbingWinch.set(1.0);
-				} else if(autoCounter > 490) {
-					climbingWinch.set(0);
-				}
-			}
+			
 		} else if(autoCounter > 490 && autoCounter < 590) {
 			liftMotor.set(ControlMode.PercentOutput, -1.0);
 		} else if(autoCounter > 590) {
@@ -600,24 +538,7 @@ public class Robot extends TimedRobot {
 			leftSideDrive.set(0);
 			rightSideDrive.set(0);			
 		} else if(autoCounter > 420 && autoCounter < 750) {
-			limitSwitchesAllThreads();
-			if(limitAllThreadDown != null && limitAllThreadDown != null) {
-				if(allThreadMotionUp == true) {
-					climbingWinch.set(1.0);
-				} else if(allThreadMotionDown == true) {
-					climbingWinch.set(-1.0);
-				} else if(allThreadMotionUp == false) {
-					climbingWinch.set(0);
-				} else if(allThreadMotionDown == false) {
-					climbingWinch.set(0);
-				}
-			} else if(limitAllThreadDown == null || limitAllThreadUp == null) {
-				if(autoCounter > 420 && autoCounter < 490) {
-					climbingWinch.set(1.0);
-				} else if(autoCounter > 490) {
-					climbingWinch.set(0);
-				}
-			}
+			
 		} else if(autoCounter > 490 && autoCounter < 590) {
 			liftMotor.set(ControlMode.PercentOutput, -1.0);
 		} else if(autoCounter > 590) {
@@ -630,19 +551,7 @@ public class Robot extends TimedRobot {
 		
 	}
 	
-	private void limitSwitchesAllThreads() {
-		if(limitAllThreadUp.get()) {
-			allThreadMotionUp = false;
-		} else if(!limitAllThreadUp.get()) {
-			allThreadMotionUp = true;
-		}
-		
-		if(limitAllThreadDown.get()) {
-			allThreadMotionDown = false;
-		} else if(!limitAllThreadDown.get()) {
-			allThreadMotionDown = true;
-		}
-	}
+
 	
 	private void switchRightAndPlayerStationRight() {
 		gyro.reset();
@@ -898,126 +807,7 @@ public class Robot extends TimedRobot {
 			rightSideDrive.set(0.45);
 
 		}
-		
-		
-		// Winch Control
-//		if(controller.getAButton()) {
-//			liftMotor.set(-1.0);
-//		} else if(controller.getBButton()) {
-//			liftMotor.set(1.0);
-//		} else if(controller.getXButton()) {
-//			liftMotor.set(-0.6);
-//		} else if(controller.getYButton()) {
-//			liftMotor.set(0.6);
-//		} else {
-//			liftMotor.set(0);
-//		}
-//		
-//		limitSwitchesAllThreads();
-		
-		
-		
-		// All Thread Control
-//		if((controller.getAButton() && rightTrigger == 1.0) && allThreadMotionUp == true) {
-//			climbingWinch.set(0.4); 
-//		} else if((controller.getBButton() && rightTrigger == 1.0) && allThreadMotionDown == true) {
-//			climbingWinch.set(-0.4);
-//		} else
-//		if(limitAllThreadDown != null && limitAllThreadUp != null) {
-//			if((controller.getXButton()) && allThreadMotionUp == true) {
-//				climbingWinch.set(1.0);
-//			} else if((controller.getYButton()) && allThreadMotionDown == true) {
-//				climbingWinch.set(-1.0);
-//			} else if(allThreadMotionDown == false) {
-//				climbingWinch.set(0);
-//			} else if(allThreadMotionUp == false) {
-//				climbingWinch.set(0);
-//			} else {
-//				climbingWinch.set(0);
-//			}
-//		} else if(limitAllThreadDown == null || limitAllThreadUp == null) {
-//			if(controller.getXButton()) {
-//				climbingWinch.set(1.0);
-//			} else if(controller.getYButton()) {
-//				climbingWinch.set(-1.0);
-//			} else {
-//				climbingWinch.set(0);
-//			}
-//		}
-		
-//		if(limitAllThreadDown != null && limitAllThreadUp != null) {
-//			if((controller.getXButton()) && allThreadMotionUp == true) {
-//				climbingWinch.set(0.6);
-//			} else if((controller.getYButton()) && allThreadMotionDown == true) {
-//				climbingWinch.set(-0.6);
-//			} else if(allThreadMotionDown == false) {
-//				climbingWinch.set(0);
-//			} else if(allThreadMotionUp == false) {
-//				climbingWinch.set(0);
-//			} else {
-//				climbingWinch.set(0);
-//			}
-//		} else if(limitAllThreadDown == null || limitAllThreadUp == null) {
-//			if(controller.getXButton()) {
-//				climbingWinch.set(0.7);
-//			} else if(controller.getYButton()) {
-//				climbingWinch.set(-1.0);
-//			} else {
-//				climbingWinch.set(0);
-//			}
-//		}
-		
-//		if(limitAllThreadDown != null && limitAllThreadUp != null) {
-//			if((rightStickY > 0.1) && allThreadMotionDown == true) {
-//				climbingWinch.set(-rightStickY);
-//			} else if((rightStickY < 0.1) && allThreadMotionUp == true) {
-//				climbingWinch.set(-rightStickY);
-//			} else if(allThreadMotionDown == false) {
-//				climbingWinch.set(0);
-//			} else if(allThreadMotionUp == false) {
-//				climbingWinch.set(0);
-//			} else {
-//				climbingWinch.set(0);
-//			}
-//		} else if(limitAllThreadDown == null || limitAllThreadUp == null) {
-//			if(rightStickY > 0.1) {
-//				climbingWinch.set(-rightStickY);
-//			} else if(rightStickY < 0.1) {
-//				climbingWinch.set(-rightStickY);
-//			} else {
-//				climbingWinch.set(0);
-//			}
-//		}
-		
-		
-		
-		
-		
-		
-		
-//		if(controller.getAButton()) {
-//			climbingWinch.set(0.4);
-//		} else if(controller.getBButton()) {
-//			climbingWinch.set(-0.4);
-//		} else if(controller.getXButton()) {
-//			climbingWinch.set(0.6);
-//		} else if(controller.getYButton()) {
-//			climbingWinch.set(-0.6);
-//		} else {
-//			climbingWinch.set(0);
-//		}
-		
-		//Cube Intake
-//		if(leftTrigger == 1.0) {
-//			clawMotor1.set(1.0);
-//			clawMotor2.set(1.0);
-//		} else if(rightTrigger == 1.0) {
-//			clawMotor1.set(-1.0);
-//			clawMotor2.set(-1.0);
-//		} else {
-//			clawMotor1.set(0);
-//			clawMotor2.set(0);
-//		}	
+
 		
 		if(rightTrigger > 0.15) {
 			clawMotor1.set(rightTrigger);

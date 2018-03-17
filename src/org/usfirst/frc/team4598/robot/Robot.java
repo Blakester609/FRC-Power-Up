@@ -9,6 +9,7 @@ package org.usfirst.frc.team4598.robot;
 
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 
 import java.util.Timer;
 import java.util.TimerTask;
@@ -119,6 +120,8 @@ public class Robot extends TimedRobot {
 	String autoCommand5 = "autonomous 5";
 	String autoCommand6 = "autonomous 6";
 	
+	final int kTimeoutMs = 10;
+	
 	
 	
 	/**
@@ -139,6 +142,8 @@ public class Robot extends TimedRobot {
 		SmartDashboard.putData("Switch or Scale?", switchOrScaleChooser);
 		gameData = DriverStation.getInstance().getGameSpecificMessage();
 		autoCounter = 0;
+		winchMotor.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, kTimeoutMs);
+		winchMotor.setSelectedSensorPosition(0, 0, 10);
 	}
 	
 // **************************************Autonomous Methods************************************
@@ -836,6 +841,11 @@ public class Robot extends TimedRobot {
 	 */
 	@Override
 	public void teleopPeriodic() {
+		int selSenPos = winchMotor.getSelectedSensorPosition(0);
+		int pulseWidthWithoutOverflows = winchMotor.getSensorCollection().getPulseWidthPosition() & 0xFFF;
+		
+		SmartDashboard.putNumber("pulseWidthPosition", pulseWidthWithoutOverflows);
+		SmartDashboard.putNumber("selSenPos", selSenPos);
 		
 		ledMode.setNumber(1);
 		camMode.setNumber(1);
@@ -1006,11 +1016,19 @@ public class Robot extends TimedRobot {
 			clawMotor2.set(0);
 		}
 		
-		if(controller.getRawAxis(5) > 0.1 || controller.getRawAxis(5) < -0.1) {
-			winchMotor.set(ControlMode.PercentOutput, -controller.getRawAxis(5));
-		} else if(controller.getRawAxis(5) > -0.1 && controller.getRawAxis(5) < 0.1) {
-			winchMotor.set(ControlMode.PercentOutput, 0.15);
-		}
+		SmartDashboard.putNumber("RawAxis5", controller.getRawAxis(5));
+		
+		if(selSenPos < 0 && (controller.getRawAxis(5) > 0.1 || (controller.getRawAxis(5) >= -0.1 && controller.getRawAxis(5) < 0.1))) {
+			winchMotor.set(ControlMode.PercentOutput, 0);
+		} else if((selSenPos >= -40000 && selSenPos <= 0) && controller.getRawAxis(5) < 0.1) {
+				winchMotor.set(ControlMode.PercentOutput, controller.getRawAxis(5));
+		} else if(selSenPos >= 0 && (controller.getRawAxis(5) <= -0.1 || controller.getRawAxis(5) >= 0.1)) {
+			winchMotor.set(ControlMode.PercentOutput, controller.getRawAxis(5));
+		}	
+		else if(selSenPos > 0 && (controller.getRawAxis(5) > -0.1 && controller.getRawAxis(5) < 0.1)) {
+				winchMotor.set(ControlMode.PercentOutput, -0.15);
+		} 
+		
 		
 		
 			

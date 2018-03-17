@@ -72,7 +72,7 @@ public class Robot extends TimedRobot {
 	
 	private XboxController controller = new XboxController(1);
 	
-	private Victor climbingWinch = new Victor(9);
+	private Victor climbingWinch = new Victor(5);
 //	Victor liftMotor = new Victor(5);
 	
 	private TalonSRX liftMotor = new TalonSRX(0);
@@ -118,11 +118,6 @@ public class Robot extends TimedRobot {
 	private boolean autoEnabled;
 	private boolean teleOpEnabled;
 	
-	private double leftStickY = controller.getRawAxis(1);
-	private double leftStickX = controller.getRawAxis(0);
-	private double rightStickY = controller.getRawAxis(5);
-	private double leftTrigger = controller.getRawAxis(2);
-	private double rightTrigger = controller.getRawAxis(3);
 	
 	/**
 	 * This function is run when the robot is first started up and should be
@@ -635,8 +630,7 @@ public class Robot extends TimedRobot {
 
 //************************************Control methods***********************************************//
 	private void clawIdleIn() {
-		clawMotor1.set(0.15);
-		clawMotor2.set(0.15);
+		cubeIntake.set(0.15);
 	}
 	
 	
@@ -764,6 +758,12 @@ public class Robot extends TimedRobot {
 	 */
 	@Override
 	public void teleopPeriodic() {
+		double leftStickY = controller.getRawAxis(1);
+		double leftStickX = controller.getRawAxis(0);
+		double rightStickY = controller.getRawAxis(5);
+		double leftTrigger = controller.getRawAxis(2);
+		double rightTrigger = controller.getRawAxis(3);
+		
 		autoEnabled = false;
 		teleOpEnabled = true;
 		
@@ -810,11 +810,9 @@ public class Robot extends TimedRobot {
 
 		
 		if(rightTrigger > 0.15) {
-			clawMotor1.set(rightTrigger);
-			clawMotor2.set(rightTrigger);
-		} else if(leftTrigger > 0.1) {
-			clawMotor1.set(-leftTrigger);
-			clawMotor2.set(-leftTrigger);
+			cubeIntake.set(rightTrigger);
+		} else if(leftTrigger > 0.15) {
+			cubeIntake.set(-leftTrigger);
 		} else {
 			clawIdleIn();
 		}
@@ -831,7 +829,7 @@ public class Robot extends TimedRobot {
 			liftMotor.set(ControlMode.PercentOutput, rightStickY);
 		} else if(selSenPos > 68000  && (rightStickY < 0.1 || (rightStickY >= -0.1 && rightStickY < 0.1))) {
 			liftMotor.set(ControlMode.PercentOutput, -0.15);
-		} else if((selSenPos >= 68000 && selSenPos <= 8000000) && rightStickY < 0.1) {
+		} else if((selSenPos >= 68000 && selSenPos <= 8000000) && rightStickY > 0.1) {
 			liftMotor.set(ControlMode.PercentOutput, rightStickY);
 		} else if(selSenPos > 0 && (rightStickY > -0.1 && rightStickY < 0.1)) {
 			liftMotor.set(ControlMode.PercentOutput, -0.15);
@@ -839,7 +837,7 @@ public class Robot extends TimedRobot {
 		
 		
 		if(controller.getAButton()) {
-			climbingWinch.set(-1.0);
+			climbingWinch.set(1.0);
 		} else if(controller.getBButton()) {
 			climbingWinch.set(1.0);
 		} else {

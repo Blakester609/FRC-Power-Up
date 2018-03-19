@@ -829,7 +829,7 @@ public class Robot extends TimedRobot {
 			liftMotor.set(ControlMode.PercentOutput, rightStickY);
 		} else if(selSenPos > 68000  && (rightStickY < 0.1 || (rightStickY >= -0.1 && rightStickY < 0.1))) {
 			liftMotor.set(ControlMode.PercentOutput, -0.15);
-		} else if((selSenPos >= 68000 && selSenPos <= 8000000) && rightStickY > 0.1) {
+		} else if((selSenPos >= 68000 && selSenPos <= 8000000) && rightStickY > -0.1) {
 			liftMotor.set(ControlMode.PercentOutput, rightStickY);
 		} else if(selSenPos > 0 && (rightStickY > -0.1 && rightStickY < 0.1)) {
 			liftMotor.set(ControlMode.PercentOutput, -0.15);

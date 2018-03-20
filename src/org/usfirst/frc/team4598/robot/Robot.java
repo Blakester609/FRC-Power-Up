@@ -235,7 +235,7 @@ public class Robot extends TimedRobot {
 		if(autoCounter < 120) {
 			liftMotor.set(ControlMode.PercentOutput, -1.0);
 		} else if(autoCounter > 120) {
-			liftMotor.set(ControlMode.PercentOutput, 0.15);
+			liftMotor.set(ControlMode.PercentOutput, -0.15);
 		}
 		
 		if(autoCounter > 200 && autoCounter < 260) {
@@ -278,7 +278,7 @@ public class Robot extends TimedRobot {
 			if(autoCounter < 120) {
 				liftMotor.set(ControlMode.PercentOutput, -1.0);
 			} else if(autoCounter > 120) {
-				liftMotor.set(ControlMode.PercentOutput, 0.15);
+				liftMotor.set(ControlMode.PercentOutput, -0.15);
 			}
 			
 			if(autoCounter > 200 && autoCounter < 260) {
@@ -389,91 +389,49 @@ public class Robot extends TimedRobot {
 
 	// Drive to the scale right plate when in the right player station
 	private void scaleRightAndPlayerStationRight() {
-		gyro.reset();
 		autoCounter++;
-		if(autoCounter < 20) {
-			leftSideDrive.set(0.4);
-			rightSideDrive.set(0);
-		}
-		gyro.reset();
-		if (autoCounter > 20 && autoCounter < 70) {
-			leftSideDrive.set(0.4+(gyro.getAngle()* 0.03));
-			rightSideDrive.set(-0.4+(gyro.getAngle()*0.1));
-		} else if(autoCounter > 70 && autoCounter < 90) {
-			leftSideDrive.set(0);
+		if(autoCounter >= 0 && autoCounter <= 1) {
+			gyro.reset();
+		} else if(autoCounter >= 1 && autoCounter <= 251) {
+			driveStraightContinuing();
+		} else if(autoCounter >= 251 && autoCounter <= 280) {
+			leftSideDrive.set(-0.4);
 			rightSideDrive.set(-0.4);
-		} 
-		gyro.reset();
-		if(autoCounter > 90 && autoCounter < 350) {
-			leftSideDrive.set(0.4+(gyro.getAngle()* 0.03));
-			rightSideDrive.set(-0.4+(gyro.getAngle()*0.1));
-		} else if(autoCounter > 350 && autoCounter < 365) {
-			leftSideDrive.set(0);
-			rightSideDrive.set(-0.4);
-		} 
-		gyro.reset();
-		if(autoCounter > 365 && autoCounter < 385) {
-			leftSideDrive.set(0.4+(gyro.getAngle()* 0.03));
-			rightSideDrive.set(-0.4+(gyro.getAngle()*0.1));
-		}
-		else if(autoCounter > 385) {
+		} else if(autoCounter >= 280) {
 			leftSideDrive.set(0);
 			rightSideDrive.set(0);
-		} else if(autoCounter > 385 && autoCounter < 750) {
-			
-		}
-		else if(autoCounter > 600 && autoCounter < 650) {
-			liftMotor.set(ControlMode.PercentOutput, -1.0);
-		} else if(autoCounter > 650) {
-			liftMotor.set(ControlMode.PercentOutput, 0);
-		} else if(autoCounter > 650 && autoCounter < 700) {
+		} else if(autoCounter >= 280 && autoCounter <= 450) {
+			liftToScaleAuto();
+		} else if(autoCounter >= 450 && autoCounter <= 500) {
 			cubeIntake.set(-0.6);
+		} else if(autoCounter >= 500) {
+			cubeIntake.set(0);
+		} else if(autoCounter >= 500 && autoCounter <= 750) {
+			liftDownAuto();
 		}
 	}
-	
+
 	// Drive to the scale left plate when in the left player station
-	private void scaleLeftAndPlayerStationLeft()
-	 {
-		gyro.reset();
+	private void scaleLeftAndPlayerStationLeft() {
 		autoCounter++;
-		if(autoCounter < 20) {
-			leftSideDrive.set(0);
-			rightSideDrive.set(-0.4);
-		}
-		gyro.reset();
-		if (autoCounter > 20 && autoCounter < 70) {
-			leftSideDrive.set(0.4+(gyro.getAngle()* 0.03));
-			rightSideDrive.set(-0.4+(gyro.getAngle()*0.1));
-		} else if(autoCounter > 70 && autoCounter < 90) {
+		if(autoCounter >= 0 && autoCounter <= 1) {
+			gyro.reset();
+		} else if(autoCounter >= 1 && autoCounter <= 251) {
+			driveStraightContinuing();
+		} else if(autoCounter >= 251 && autoCounter <= 280) {
 			leftSideDrive.set(0.4);
-			rightSideDrive.set(0);
-		} 
-		gyro.reset();
-		if(autoCounter > 90 && autoCounter < 350) {
-			leftSideDrive.set(0.4+(gyro.getAngle()* 0.03));
-			rightSideDrive.set(-0.4+(gyro.getAngle()*0.1));
-		} else if(autoCounter > 350 && autoCounter < 365) {
-			leftSideDrive.set(4.0);
-			rightSideDrive.set(0);
-		} 
-		gyro.reset();
-		if(autoCounter > 365 && autoCounter < 385) {
-			leftSideDrive.set(0.4+(gyro.getAngle()* 0.03));
-			rightSideDrive.set(-0.4+(gyro.getAngle()*0.1));
-		}
-		else if(autoCounter > 385) {
+			rightSideDrive.set(0.4);
+		} else if(autoCounter >= 280) {
 			leftSideDrive.set(0);
 			rightSideDrive.set(0);
-		} 
-		else if(autoCounter > 385 && autoCounter < 750) {
-			
-		}
-		else if(autoCounter > 600 && autoCounter < 650) {
-			liftMotor.set(ControlMode.PercentOutput, -1.0);
-		} else if(autoCounter > 650) {
-			liftMotor.set(ControlMode.PercentOutput, 0);
-		} else if(autoCounter > 650 && autoCounter < 700) {
+		} else if(autoCounter >= 280 && autoCounter <= 450) {
+			liftToScaleAuto();
+		} else if(autoCounter >= 450 && autoCounter <= 500) {
 			cubeIntake.set(-0.6);
+		} else if(autoCounter >= 500) {
+			cubeIntake.set(0);
+		} else if(autoCounter >= 500 && autoCounter <= 750) {
+			liftDownAuto();
 		}
 	}
 	
@@ -549,6 +507,27 @@ public class Robot extends TimedRobot {
 
 	
 	private void switchRightAndPlayerStationRight() {
+		autoCounter++;
+		if(autoCounter >= 0 && autoCounter <= 1) {
+			gyro.reset();
+		}
+		if(autoCounter < 120) {
+			liftMotor.set(ControlMode.PercentOutput, -1.0);
+		} else if(autoCounter > 120) {
+			liftMotor.set(ControlMode.PercentOutput, -0.15);
+		}
+		else if(autoCounter >= 120 && autoCounter <= 270) {
+			driveStraightContinuing();
+		} else if(autoCounter >= 270 && autoCounter <= 300) {
+			leftSideDrive.set(-0.4);
+			rightSideDrive.set(-0.4);
+		} else if(autoCounter >= 300) {
+			leftSideDrive.set(0);
+			rightSideDrive.set(0);
+		} else if(autoCounter >= 300) {
+			
+		}
+		
 		gyro.reset();
 		autoCounter++;
 		if(autoCounter < 20) {
@@ -580,6 +559,7 @@ public class Robot extends TimedRobot {
 	}
 	
 	private void switchLeftAndPlayerStationLeft() {
+		
 		gyro.reset();
 		autoCounter++;
 		if(autoCounter < 20) {
@@ -633,6 +613,21 @@ public class Robot extends TimedRobot {
 		cubeIntake.set(0.15);
 	}
 	
+	private void liftToScaleAuto() {
+		if(selSenPos <= 68000) {
+			liftMotor.set(ControlMode.PercentOutput, -1.0);
+		} else if(selSenPos >= 68000) {
+			liftMotor.set(ControlMode.PercentOutput, -0.15);
+		}
+	}
+	
+	private void liftDownAuto() {
+		if(selSenPos >= 0) {
+			liftMotor.set(ControlMode.PercentOutput, 1.0);
+		} else if(selSenPos <= 0) {
+			liftMotor.set(ControlMode.PercentOutput, 0);
+		}
+	}
 	
 	
 	
@@ -725,8 +720,8 @@ public class Robot extends TimedRobot {
 				break;
 			case "autonomous 4":
 //				driveStraightRight();
-//				scaleRightAndPlayerStationRight();
-				driveStraight(150);
+				scaleRightAndPlayerStationRight();
+//				driveStraight(150);
 				break;
 			case "autonomous 5":
 //				driveStraightLeft();
@@ -758,6 +753,9 @@ public class Robot extends TimedRobot {
 	 */
 	@Override
 	public void teleopPeriodic() {
+		int selSenPos = liftMotor.getSelectedSensorPosition(0);
+		int pulseWidthWithoutOverflows = liftMotor.getSensorCollection().getPulseWidthPosition() & 0xFFF;
+		
 		double leftStickY = controller.getRawAxis(1);
 		double leftStickX = controller.getRawAxis(0);
 		double rightStickY = controller.getRawAxis(5);
@@ -825,13 +823,18 @@ public class Robot extends TimedRobot {
 			liftMotor.set(ControlMode.PercentOutput, 0);
 		} else if((selSenPos >= -40000 && selSenPos <= 0) && rightStickY < 0.1) {
 				liftMotor.set(ControlMode.PercentOutput, rightStickY);
-		} else if(selSenPos >= 0 && (rightStickY <= -0.1 || rightStickY >= 0.1)) {
+		} else if(selSenPos >= 0  && (rightStickY <= -0.1 || rightStickY >= 0.1)) {
 			liftMotor.set(ControlMode.PercentOutput, rightStickY);
-		} else if(selSenPos > 68000  && (rightStickY < 0.1 || (rightStickY >= -0.1 && rightStickY < 0.1))) {
+		} 
+		else if(selSenPos > 65000  && (rightStickY < 0.1 || (rightStickY >= -0.1 && rightStickY < 0.1))) {
 			liftMotor.set(ControlMode.PercentOutput, -0.15);
-		} else if((selSenPos >= 68000 && selSenPos <= 8000000) && rightStickY > -0.1) {
+		} 
+		else if((selSenPos >= 68000 && selSenPos <= 8000000) && rightStickY > -0.1) {
 			liftMotor.set(ControlMode.PercentOutput, rightStickY);
-		} else if(selSenPos > 0 && (rightStickY > -0.1 && rightStickY < 0.1)) {
+		} 
+		else if((selSenPos > 10000 && selSenPos < 20000) && (rightStickY > -0.1 && rightStickY < 0.1)) {
+			liftMotor.set(ControlMode.PercentOutput, -0.1);
+		} else if(selSenPos > 20000 && (rightStickY > -0.1 && rightStickY < 0.1)) {
 			liftMotor.set(ControlMode.PercentOutput, -0.15);
 		}
 		
@@ -839,7 +842,7 @@ public class Robot extends TimedRobot {
 		if(controller.getAButton()) {
 			climbingWinch.set(1.0);
 		} else if(controller.getBButton()) {
-			climbingWinch.set(1.0);
+			climbingWinch.set(-1.0);
 		} else {
 			climbingWinch.set(0);
 		}
@@ -856,6 +859,6 @@ public class Robot extends TimedRobot {
 	 */
 	@Override
 	public void testPeriodic() {
-		
+		driveStraightContinuing();
 	}
 }

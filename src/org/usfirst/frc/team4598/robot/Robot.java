@@ -118,6 +118,10 @@ public class Robot extends TimedRobot {
 	private boolean autoEnabled;
 	private boolean teleOpEnabled;
 	
+	double capture_value, output, oldInput;
+	int mode;
+	double motorSpeed;
+	
 	
 	/**
 	 * This function is run when the robot is first started up and should be
@@ -139,6 +143,7 @@ public class Robot extends TimedRobot {
 		autoCounter = 0;
 		liftMotor.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, kTimeoutMs);
 		liftMotor.setSelectedSensorPosition(0, 0, 10);
+		output = 0;
 	}
 	
 // **************************************Autonomous Methods************************************
@@ -825,13 +830,13 @@ public class Robot extends TimedRobot {
 		}
 
 		
-		if(rightTrigger > 0.15) {
-			cubeIntake.set(rightTrigger);
-		} else if(leftTrigger > 0.15) {
-			cubeIntake.set(-leftTrigger);
-		} else {
-			clawIdleIn();
-		}
+//		if(rightTrigger > 0.15) {
+//			cubeIntake.set(0.7*rightTrigger);
+//		} else if(leftTrigger > 0.15) {
+//			cubeIntake.set(0.7*-leftTrigger);
+//		} else {
+//			clawIdleIn();
+//		}
 		
 		
 		
@@ -866,7 +871,48 @@ public class Robot extends TimedRobot {
 		}
 		
 		// testing 
+
+		//rate of change in joystick values.
+		if (output > 0 && (rightTrigger <= 0.15 || rightTrigger == 0)) {
+			output = 0.3;
+		} 
 		
+		if(output > 1.0) {
+			output = 1.0;
+		}
+		
+		if(rightTrigger > 0.15) {
+			double delta = rightTrigger - oldInput;
+			
+			double DELTA_LIMIT = 0.2;
+
+			//is joystick being moved too fast?
+			if(delta >= DELTA_LIMIT) { 
+				mode=1; 
+				capture_value = rightTrigger;
+			}
+
+			//output integration
+			switch(mode){
+				case 1: 
+					output += 0.03;
+					break;
+
+			}
+
+			motorSpeed = output;
+			cubeIntake.set(0.6*motorSpeed);
+			
+			SmartDashboard.putNumber("Claw Output", output);
+			SmartDashboard.putNumber("Right Trigger Output", rightTrigger);
+
+			//Keep values for next loop
+			oldInput = rightTrigger;
+		} else if(leftTrigger > 0.15) {
+			cubeIntake.set(-leftTrigger);
+		} else {
+			clawIdleIn();
+		}
 		
 			
 		

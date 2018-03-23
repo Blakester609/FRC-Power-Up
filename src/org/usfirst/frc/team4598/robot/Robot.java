@@ -418,30 +418,30 @@ public class Robot extends TimedRobot {
 	// Drive to the scale right plate when in the right player station
 	private void scaleRightAndPlayerStationRight() {
 		autoCounter++;
-		if(autoCounter >= 0 && autoCounter <= 1) {
+		if(autoCounter > 0 && autoCounter < 1) {
 			gyro.reset();
 		} 
-		if(autoCounter >= 1 && autoCounter <= 350) {
+		if(autoCounter > 1 && autoCounter < 350) {
 			driveStraightContinuing();
 		} 
-		if(autoCounter >= 351 && autoCounter <= 380) {
+		if(autoCounter > 351 && autoCounter < 380) {
 			leftSideDrive.set(-0.4);
 			rightSideDrive.set(-0.4);
 		} 
-		if(autoCounter >= 380) {
+		if(autoCounter > 380) {
 			leftSideDrive.set(0);
 			rightSideDrive.set(0);
 		} 
-		if(autoCounter >= 380 && autoCounter <= 550) {
+		if(autoCounter > 380 && autoCounter < 550) {
 			liftToScaleAuto();
 		} 
-		if(autoCounter >= 550 && autoCounter <= 600) {
+		if(autoCounter > 550 && autoCounter < 600) {
 			cubeIntake.set(-0.6);
 		} 
-		if(autoCounter >= 600) {
+		if(autoCounter > 600) {
 			cubeIntake.set(0);
 		} 
-		if(autoCounter >= 600 && autoCounter <= 750) {
+		if(autoCounter > 600 && autoCounter < 750) {
 			liftDownAuto();
 		}
 	}
@@ -449,30 +449,30 @@ public class Robot extends TimedRobot {
 	// Drive to the scale left plate when in the left player station
 	private void scaleLeftAndPlayerStationLeft() {
 		autoCounter++;
-		if(autoCounter >= 0 && autoCounter <= 1) {
+		if(autoCounter > 0 && autoCounter < 1) {
 			gyro.reset();
 		} 
-		if(autoCounter >= 1 && autoCounter <= 350) {
+		if(autoCounter > 1 && autoCounter < 350) {
 			driveStraightContinuing();
 		} 
-		if(autoCounter >= 351 && autoCounter <= 380) {
+		if(autoCounter > 351 && autoCounter < 380) {
 			leftSideDrive.set(0.4);
 			rightSideDrive.set(0.4);
 		} 
-		if(autoCounter >= 380) {
+		if(autoCounter > 380) {
 			leftSideDrive.set(0);
 			rightSideDrive.set(0);
 		} 
-		if(autoCounter >= 380 && autoCounter <= 550) {
+		if(autoCounter > 380 && autoCounter < 550) {
 			liftToScaleAuto();
 		} 
-		if(autoCounter >= 550 && autoCounter <= 600) {
+		if(autoCounter > 550 && autoCounter < 600) {
 			cubeIntake.set(-0.6);
 		} 
-		if(autoCounter >= 600) {
+		if(autoCounter > 600) {
 			cubeIntake.set(0);
 		} 
-		if(autoCounter >= 600 && autoCounter <= 750) {
+		if(autoCounter > 600 && autoCounter < 750) {
 			liftDownAuto();
 		}
 	}
@@ -674,9 +674,9 @@ public class Robot extends TimedRobot {
 	}
 	
 	private void liftToScaleAuto() {
-		if(selSenPos <= 68000) {
+		if(selSenPos <= 65000) {
 			liftMotor.set(ControlMode.PercentOutput, -1.0);
-		} else if(selSenPos >= 68000) {
+		} else if(selSenPos >= 65000) {
 			liftMotor.set(ControlMode.PercentOutput, -0.15);
 		}
 	}

@@ -785,8 +785,8 @@ public class Robot extends TimedRobot {
 				break;
 			case "autonomous 5":
 //				driveStraightLeft();
-//				scaleLeftAndPlayerStationLeft();
-				driveStraight(150);
+				scaleLeftAndPlayerStationLeft();
+//				driveStraight(150);
 				break;
 			case "autonomous 6":
 //				scaleRightAndPlayerStationLeft();

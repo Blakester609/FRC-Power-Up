@@ -436,7 +436,7 @@ public class Robot extends TimedRobot {
 			liftToScaleAuto();
 		} 
 		if(autoCounter > 550 && autoCounter < 600) {
-			cubeIntake.set(-0.6);
+			cubeIntake.set(-1.0);
 		} 
 		if(autoCounter > 600) {
 			cubeIntake.set(0);
@@ -448,6 +448,7 @@ public class Robot extends TimedRobot {
 
 	// Drive to the scale left plate when in the left player station
 	private void scaleLeftAndPlayerStationLeft() {
+		
 		autoCounter++;
 		if(autoCounter > 0 && autoCounter < 1) {
 			gyro.reset();
@@ -467,7 +468,7 @@ public class Robot extends TimedRobot {
 			liftToScaleAuto();
 		} 
 		if(autoCounter > 550 && autoCounter < 600) {
-			cubeIntake.set(-0.6);
+			cubeIntake.set(-1.0);
 		} 
 		if(autoCounter > 600) {
 			cubeIntake.set(0);
@@ -651,16 +652,74 @@ public class Robot extends TimedRobot {
 	}
 	
 	private void switchRightAndPlayerStationLeft() {
-		gyro.reset();
 		autoCounter++;
-		if(autoCounter < 20) {
-			leftSideDrive.set(0);
+		if(autoCounter < 1) {
+			gyro.reset();
+		}
+		if(autoCounter > 1 && autoCounter < 151) {
+			driveStraightContinuing();
+		}
+		if(autoCounter > 151 && autoCounter < 190) {
+			leftSideDrive.set(0.4);
+			rightSideDrive.set(0.4);
+		}
+		if(autoCounter > 190 && autoCounter < 191) {
+			gyro.reset();
+		}
+		if(autoCounter > 191 && autoCounter < 350) {
+			driveStraightContinuing();
+		}
+		if(autoCounter > 350 && autoCounter < 390) {
+			leftSideDrive.set(0.4);
+			rightSideDrive.set(0.4);
+		}
+		if(autoCounter > 390 && autoCounter < 450) {
+			liftMotor.set(ControlMode.PercentOutput, -1.0);
+		}
+		if(autoCounter > 450) {
+			liftMotor.set(ControlMode.PercentOutput, -0.15);
+		}
+		if(autoCounter > 450 && autoCounter < 500) {
+			cubeIntake.set(-1.0);
+		}
+		if(autoCounter > 500) {
+			cubeIntake.set(0);
+		}
+	}
+	
+	private void switchLeftAndPlayerStationRight() {
+		autoCounter++;
+		if(autoCounter < 1) {
+			gyro.reset();
+		}
+		if(autoCounter > 1 && autoCounter < 151) {
+			driveStraightContinuing();
+		}
+		if(autoCounter > 151 && autoCounter < 190) {
+			leftSideDrive.set(-0.4);
 			rightSideDrive.set(-0.4);
-		} 
-		gyro.reset();
-		if(autoCounter > 20 && autoCounter < 100) {
-			leftSideDrive.set(0.4+(gyro.getAngle()* 0.015));
-			rightSideDrive.set(-0.4+(gyro.getAngle()*0.15));
+		}
+		if(autoCounter > 190 && autoCounter < 191) {
+			gyro.reset();
+		}
+		if(autoCounter > 191 && autoCounter < 350) {
+			driveStraightContinuing();
+		}
+		if(autoCounter > 350 && autoCounter < 390) {
+			leftSideDrive.set(-0.4);
+			rightSideDrive.set(-0.4);
+		}
+		if(autoCounter > 390 && autoCounter < 450) {
+			liftMotor.set(ControlMode.PercentOutput, -1.0);
+		}
+		if(autoCounter > 450) {
+			liftMotor.set(ControlMode.PercentOutput, -0.15);
+		}
+		if(autoCounter > 450 && autoCounter < 500) {
+			cubeIntake.set(-1.0);
+		}
+		if(autoCounter > 500) {
+			cubeIntake.set(0);
 		}
 	}
 	
@@ -674,14 +733,16 @@ public class Robot extends TimedRobot {
 	}
 	
 	private void liftToScaleAuto() {
-		if(selSenPos <= 65000) {
+		int selSenPos = liftMotor.getSelectedSensorPosition(0);
+		if(selSenPos <= 63000) {
 			liftMotor.set(ControlMode.PercentOutput, -1.0);
-		} else if(selSenPos >= 65000) {
+		} else if(selSenPos >= 63000) {
 			liftMotor.set(ControlMode.PercentOutput, -0.15);
 		}
 	}
 	
 	private void liftDownAuto() {
+		int selSenPos = liftMotor.getSelectedSensorPosition(0);
 		if(selSenPos >= 0) {
 			liftMotor.set(ControlMode.PercentOutput, 1.0);
 		} else if(selSenPos <= 0) {
@@ -722,33 +783,57 @@ public class Robot extends TimedRobot {
 				}
 			}
 		} else if((playerStation == blue3 || playerStation == red3) && scaleOrSwitch == scaleAuto) {
-			if(gameData.charAt(1) == 'L') {
-				autoCommand = "autonomous 3";
-			}
-			if(gameData.charAt(1) == 'R') {
-				autoCommand = "autonomous 4";
+			if(gameData.length() > 0) {
+//				if(gameData.charAt(1) == 'L') {
+//					autoCommand = "autonomous 3";
+//				}
+				if(gameData.charAt(1) == 'R') {
+					autoCommand = "autonomous 4";
+				} else if(gameData.charAt(0) == 'R') {
+					autoCommand = "autonomous 8";
+				} else if(gameData.charAt(0) == 'L' && gameData.charAt(1) == 'L') {
+					autoCommand = "autonomous 7";
+				}
 			}
 		} else if((playerStation == blue3 || playerStation == red3) && scaleOrSwitch == switchAuto) {
-			if(gameData.charAt(0) == 'L') {
-				autoCommand = "autonomous 7";
-			}
-			if(gameData.charAt(0) == 'R') {
-				autoCommand = "autonomous 8";
+//			if(gameData.charAt(0) == 'L') {
+//				autoCommand = "autonomous 7";
+//			}
+			if(gameData.length() > 0) {
+				if(gameData.charAt(0) == 'R') {
+					autoCommand = "autonomous 8";
+				} else if(gameData.charAt(1) == 'R') {
+					autoCommand = "autonomous 4";
+				} else if(gameData.charAt(0) == 'L' && gameData.charAt(1) == 'L') {
+					autoCommand = "autonomous 7";
+				}
 			}
 		} else if((playerStation == blue1 || playerStation == red1) && scaleOrSwitch == scaleAuto) {
-			if(gameData.charAt(1) == 'L') {
-				autoCommand = "autonomous 5";
-			}
-			if(gameData.charAt(1) == 'R') {
-				autoCommand = "autonomous 6";
+			if(gameData.length() > 0) {
+				if(gameData.charAt(1) == 'L') {
+					autoCommand = "autonomous 5";
+				} else if(gameData.charAt(0) == 'L') {
+					autoCommand = "autonomous 9";
+				} else if(gameData.charAt(0) == 'R' && gameData.charAt(1) == 'R') {
+					autoCommand = "autonomous 10";
+				}
+//				if(gameData.charAt(1) == 'R') {
+//					autoCommand = "autonomous 6";
+//				}
 			}
 		} else if((playerStation == blue1 || playerStation == red1) && scaleOrSwitch == switchAuto) {
-			if(gameData.charAt(1) == 'L') {
-				autoCommand = "autonomous 9";
+			if(gameData.length() > 0) {
+				if(gameData.charAt(0) == 'L') {
+					autoCommand = "autonomous 9";
+				} else if(gameData.charAt(1) == 'L') {
+					autoCommand = "autonomous 5";
+				} else if(gameData.charAt(0) == 'R' && gameData.charAt(1) == 'R') {
+					autoCommand = "autonomous 10";
+				}
 			}
-			if(gameData.charAt(1) == 'R') {
-				autoCommand = "autonomous 10";
-			}
+//			if(gameData.charAt(0) == 'R') {
+//				autoCommand = "autonomous 10";
+//			}
 		}
 		
 		
@@ -794,6 +879,7 @@ public class Robot extends TimedRobot {
 				driveStraight(150);
 				break;
 			case "autonomous 7":
+				switchLeftAndPlayerStationRight();
 				break;
 			case "autonomous 8":
 				switchRightAndPlayerStationRight();
@@ -802,6 +888,7 @@ public class Robot extends TimedRobot {
 				switchLeftAndPlayerStationLeft();
 				break;
 			case "autonomous 10":
+				switchRightAndPlayerStationLeft();
 				break;
 			}
 	}
@@ -960,7 +1047,8 @@ public class Robot extends TimedRobot {
 	 */
 	@Override
 	public void testPeriodic() {
-		driveStraightContinuing();
+//		driveStraightContinuing();
+		liftToScaleAuto();
 //		if((gyro.getAngle() >= -30 && gyro.getAngle() <= -60)) {
 //			leftSideDrive.set(-0.4);
 //			rightSideDrive.set(-0.4);

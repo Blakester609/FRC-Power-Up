@@ -121,7 +121,8 @@ public class Robot extends TimedRobot {
 	double capture_value, output, oldInput;
 	int mode;
 	double motorSpeed;
-	
+	double liftUpRamping;
+	double liftDownRamping;
 	
 	/**
 	 * This function is run when the robot is first started up and should be
@@ -145,6 +146,8 @@ public class Robot extends TimedRobot {
 		liftMotor.setSelectedSensorPosition(0, 0, 10);
 		output = 0;
 		gyro.reset();
+		liftUpRamping = 0;
+		liftDownRamping = 0;
 	}
 	
 // **************************************Autonomous Methods************************************
@@ -250,39 +253,39 @@ public class Robot extends TimedRobot {
 			leftSideDrive.set(0.4);
 			rightSideDrive.set(0);
 		}
-		if(autoCounter > 60 && autoCounter < 100) {
+		if(autoCounter > 60 && autoCounter < 120) {
 //			leftSideDrive.set(0.4+(gyro.getAngle()* 0.015));
 //			rightSideDrive.set(-0.4+(gyro.getAngle()*0.015));
 			leftSideDrive.set(0.4);
 			rightSideDrive.set(-0.4);
 		} 
-		if(autoCounter > 100 && autoCounter < 140) {
+		if(autoCounter > 120 && autoCounter < 160) {
 			leftSideDrive.set(-0.4);
 			rightSideDrive.set(-0.4);
 		}
-		if(autoCounter > 140 && autoCounter < 210) {
+		if(autoCounter > 160 && autoCounter < 230) {
 			leftSideDrive.set(0);
 			rightSideDrive.set(0);
 			liftMotor.set(ControlMode.PercentOutput, -1.0);
 		} 
-		if(autoCounter > 210) {
+		if(autoCounter > 230) {
 			liftMotor.set(ControlMode.PercentOutput, -0.15);
 		}
-		if(autoCounter > 210 && autoCounter < 330) {
+		if(autoCounter > 230 && autoCounter < 320) {
 //			leftSideDrive.set(0.4+(gyro.getAngle()* 0.03));
 //			rightSideDrive.set(-0.4+(gyro.getAngle()*0.1));
 			leftSideDrive.set(0.4);
 			rightSideDrive.set(-0.4);
 		} 
-		if(autoCounter > 330) {
+		if(autoCounter > 320) {
 			leftSideDrive.set(0);
 			rightSideDrive.set(0);
 		}
 		gyro.reset();
-		if(autoCounter > 330 && autoCounter < 390) {
+		if(autoCounter > 320 && autoCounter < 380) {
 			cubeIntake.set(-0.6);
 		}
-		if(autoCounter > 390) {
+		if(autoCounter > 380) {
 			cubeIntake.set(0);
 		}
 	}
@@ -304,38 +307,38 @@ public class Robot extends TimedRobot {
 				leftSideDrive.set(0);
 				rightSideDrive.set(-0.4);
 			}
-			if(autoCounter > 60 && autoCounter < 210) {
+			if(autoCounter > 60 && autoCounter < 200) {
 //				leftSideDrive.set(0.4+(gyro.getAngle()* 0.015));
 //				rightSideDrive.set(-0.4+(gyro.getAngle()*0.015));
 				leftSideDrive.set(0.4);
 				rightSideDrive.set(-0.4);
 			} 
-			if(autoCounter > 210 && autoCounter < 230) {
+			if(autoCounter > 200 && autoCounter < 220) {
 				leftSideDrive.set(0.4);
 				rightSideDrive.set(0.4);
 			}
-			if(autoCounter > 230 && autoCounter < 300) {
+			if(autoCounter > 220 && autoCounter < 290) {
 				leftSideDrive.set(0);
 				rightSideDrive.set(0);
 				liftMotor.set(ControlMode.PercentOutput, -1.0);
 			} 
-			if(autoCounter > 300) {
+			if(autoCounter > 290) {
 				liftMotor.set(ControlMode.PercentOutput, -0.15);
 			}
-			if(autoCounter > 300 && autoCounter < 380) {
+			if(autoCounter > 290 && autoCounter < 370) {
 //				leftSideDrive.set(0.4+(gyro.getAngle()* 0.03));
 //				rightSideDrive.set(-0.4+(gyro.getAngle()*0.1));
 				leftSideDrive.set(0.4);
 				rightSideDrive.set(-0.4);
 			} 
-			if(autoCounter > 380) {
+			if(autoCounter > 370) {
 				leftSideDrive.set(0);
 				rightSideDrive.set(0);
 			}
-			if(autoCounter > 380 && autoCounter < 440) {
+			if(autoCounter > 370 && autoCounter < 430) {
 				cubeIntake.set(-0.6);
 			}
-			if(autoCounter > 440) {
+			if(autoCounter > 430) {
 				cubeIntake.set(0);
 			}
 		}
@@ -412,69 +415,146 @@ public class Robot extends TimedRobot {
 	private void driveStraightContinuing() {
 			leftSideDrive.set(0.4+(0.01*gyro.getAngle()));
 //			rightSideDrive.set(-0.425);
-			rightSideDrive.set(-0.4-(0.03*gyro.getAngle()));
+			rightSideDrive.set(-0.4-(0.038*gyro.getAngle()));
 	}
 
 	// Drive to the scale right plate when in the right player station
 	private void scaleRightAndPlayerStationRight() {
+		int selSenPos = liftMotor.getSelectedSensorPosition(0);
+		int pulseWidthWithoutOverflows = liftMotor.getSensorCollection().getPulseWidthPosition() & 0xFFF;
+		SmartDashboard.putNumber("pulseWidthPosition", pulseWidthWithoutOverflows);
+		SmartDashboard.putNumber("selSenPos", selSenPos);
 		autoCounter++;
 		if(autoCounter > 0 && autoCounter < 1) {
 			gyro.reset();
 		} 
-		if(autoCounter > 1 && autoCounter < 350) {
+		if(autoCounter > 1 && autoCounter < 320) {
 			driveStraightContinuing();
 		} 
-		if(autoCounter > 351 && autoCounter < 380) {
+		if(autoCounter > 320 && autoCounter < 335) {
 			leftSideDrive.set(-0.4);
 			rightSideDrive.set(-0.4);
 		} 
-		if(autoCounter > 380) {
+//		if(autoCounter > 335 && autoCounter < 355) {
+//			leftSideDrive.set(0.3);
+//			rightSideDrive.set(-0.3);
+//		} 
+		if(autoCounter > 335 && autoCounter < 505) {
 			leftSideDrive.set(0);
 			rightSideDrive.set(0);
-		} 
-		if(autoCounter > 380 && autoCounter < 550) {
-			liftToScaleAuto();
-		} 
-		if(autoCounter > 550 && autoCounter < 600) {
+		}
+		if(autoCounter > 335 && autoCounter < 505) {
+			liftUpRamping -= 0.006;
+			if(selSenPos <= 70000) {
+				liftMotor.set(ControlMode.PercentOutput, 0+liftUpRamping);
+			} 
+			if(selSenPos >= 70000) {
+				liftMotor.set(ControlMode.PercentOutput, -0.15);
+			}
+		}
+		if(autoCounter > 505 && autoCounter < 630) {
+			leftSideDrive.set(0.325);
+			rightSideDrive.set(-0.325);
+		}
+		if(autoCounter > 630 && autoCounter < 680) {
+			leftSideDrive.set(0);
+			rightSideDrive.set(0);
+		}
+		if(autoCounter > 630 && autoCounter < 690) {
 			cubeIntake.set(-1.0);
 		} 
-		if(autoCounter > 600) {
+		if(autoCounter > 690) {
 			cubeIntake.set(0);
 		} 
-		if(autoCounter > 600 && autoCounter < 750) {
-			liftDownAuto();
+		if(autoCounter > 690 && autoCounter < 740) {
+			leftSideDrive.set(-0.39);
+			rightSideDrive.set(0.39);
+		}
+		if(autoCounter > 740) {
+			leftSideDrive.set(0);
+			rightSideDrive.set(0);
+		}
+		if(autoCounter > 740 && autoCounter < 750) {
+			liftDownRamping += 0.02;
+			if(selSenPos > 0) {
+				liftMotor.set(ControlMode.PercentOutput, 0+liftDownRamping);
+			} 
+			if(selSenPos < 0) {
+				liftMotor.set(ControlMode.PercentOutput, 0);
+			}
+		}
+		if(autoCounter > 750) {
+			liftMotor.set(ControlMode.PercentOutput, 0);
 		}
 	}
 
 	// Drive to the scale left plate when in the left player station
 	private void scaleLeftAndPlayerStationLeft() {
-		
+		int selSenPos = liftMotor.getSelectedSensorPosition(0);
+		int pulseWidthWithoutOverflows = liftMotor.getSensorCollection().getPulseWidthPosition() & 0xFFF;
+		SmartDashboard.putNumber("pulseWidthPosition", pulseWidthWithoutOverflows);
+		SmartDashboard.putNumber("selSenPos", selSenPos);
 		autoCounter++;
 		if(autoCounter > 0 && autoCounter < 1) {
 			gyro.reset();
 		} 
-		if(autoCounter > 1 && autoCounter < 350) {
+		if(autoCounter > 1 && autoCounter < 320) {
 			driveStraightContinuing();
 		} 
-		if(autoCounter > 351 && autoCounter < 380) {
+		if(autoCounter > 320 && autoCounter < 335) {
 			leftSideDrive.set(0.4);
 			rightSideDrive.set(0.4);
 		} 
-		if(autoCounter > 380) {
+//		if(autoCounter > 335 && autoCounter < 355) {
+//			leftSideDrive.set(0.3);
+//			rightSideDrive.set(-0.3);
+//		} 
+		if(autoCounter > 335 && autoCounter < 505) {
 			leftSideDrive.set(0);
 			rightSideDrive.set(0);
-		} 
-		if(autoCounter > 380 && autoCounter < 550) {
-			liftToScaleAuto();
-		} 
-		if(autoCounter > 550 && autoCounter < 600) {
+		}
+		if(autoCounter > 335 && autoCounter < 505) {
+			liftUpRamping -= 0.006;
+			if(selSenPos <= 70000) {
+				liftMotor.set(ControlMode.PercentOutput, 0+liftUpRamping);
+			} 
+			if(selSenPos >= 70000) {
+				liftMotor.set(ControlMode.PercentOutput, -0.15);
+			}
+		}
+		if(autoCounter > 505 && autoCounter < 590) {
+			leftSideDrive.set(0.325);
+			rightSideDrive.set(-0.325);
+		}
+		if(autoCounter > 590 && autoCounter < 640) {
+			leftSideDrive.set(0);
+			rightSideDrive.set(0);
+		}
+		if(autoCounter > 590 && autoCounter < 650) {
 			cubeIntake.set(-1.0);
 		} 
-		if(autoCounter > 600) {
+		if(autoCounter > 650) {
 			cubeIntake.set(0);
 		} 
-		if(autoCounter > 600 && autoCounter < 750) {
-			liftDownAuto();
+		if(autoCounter > 650 && autoCounter < 705) {
+			leftSideDrive.set(-0.325);
+			rightSideDrive.set(0.325);
+		}
+		if(autoCounter > 705) {
+			leftSideDrive.set(0);
+			rightSideDrive.set(0);
+		}
+		if(autoCounter > 705 && autoCounter < 750) {
+			liftDownRamping += 0.02;
+			if(selSenPos > 0) {
+				liftMotor.set(ControlMode.PercentOutput, 0+liftDownRamping);
+			} 
+			if(selSenPos < 0) {
+				liftMotor.set(ControlMode.PercentOutput, 0);
+			}
+		}
+		if(autoCounter > 750) {
+			liftMotor.set(ControlMode.PercentOutput, 0);
 		}
 	}
 	
@@ -553,35 +633,48 @@ public class Robot extends TimedRobot {
 		autoCounter++;
 		if(autoCounter > 0 && autoCounter < 1) {
 			gyro.reset();
+		} 
+		if(autoCounter < 20) {
+			leftSideDrive.set(0.4);
+			rightSideDrive.set(0);
 		}
-		if(autoCounter < 50) {
+		if(autoCounter > 20 && autoCounter < 30) {
+			leftSideDrive.set(0.4);
+			rightSideDrive.set(-0.4);
+		}
+		if(autoCounter > 30 && autoCounter < 40) {
+			leftSideDrive.set(-0.4);
+			rightSideDrive.set(-0.4);
+		}
+		gyro.reset();
+		if(autoCounter > 40 && autoCounter  < 90) {
 			driveStraightContinuing();
 		}
-		if(autoCounter > 50 && autoCounter < 60) {
+		if(autoCounter > 90 && autoCounter < 100) {
 			leftSideDrive.set(0);
 			rightSideDrive.set(0);
 		}
-		if(autoCounter > 60 && autoCounter < 220) {
+		if(autoCounter > 100 && autoCounter < 260) {
 			driveStraightContinuing();
 		}
-		if(autoCounter > 220 && autoCounter < 260) {
+		if(autoCounter > 260 && autoCounter < 320) {
 			leftSideDrive.set(-0.4);
 			rightSideDrive.set(-0.4);
 		} 
-		if(autoCounter > 260) {
+		if(autoCounter > 320) {
 			leftSideDrive.set(0);
 			rightSideDrive.set(0);
 		}
-		if(autoCounter > 260 && autoCounter < 340) {
+		if(autoCounter > 320 && autoCounter < 400) {
 			liftMotor.set(ControlMode.PercentOutput, -1.0);
 		}
-		if(autoCounter > 340) {
+		if(autoCounter > 400) {
 			liftMotor.set(ControlMode.PercentOutput, -0.15);
 		}
-		if(autoCounter > 340 && autoCounter < 440) {
+		if(autoCounter > 400 && autoCounter < 500) {
 			cubeIntake.set(-0.7);
 		}
-		if(autoCounter > 440) {
+		if(autoCounter > 500) {
 			cubeIntake.set(0);
 		}
 		
@@ -734,9 +827,9 @@ public class Robot extends TimedRobot {
 	
 	private void liftToScaleAuto() {
 		int selSenPos = liftMotor.getSelectedSensorPosition(0);
-		if(selSenPos <= 63000) {
+		if(selSenPos <= 70000) {
 			liftMotor.set(ControlMode.PercentOutput, -1.0);
-		} else if(selSenPos >= 63000) {
+		} else if(selSenPos >= 70000) {
 			liftMotor.set(ControlMode.PercentOutput, -0.15);
 		}
 	}

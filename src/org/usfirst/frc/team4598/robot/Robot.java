@@ -121,6 +121,10 @@ public class Robot extends TimedRobot {
 	double capture_value, output, oldInput;
 	int mode;
 	double motorSpeed;
+	double newOldInput;
+	double newCaptureValue, newOutput;
+	int newMode;
+	double newOutput2;
 	
 	
 	/**
@@ -145,6 +149,8 @@ public class Robot extends TimedRobot {
 		liftMotor.setSelectedSensorPosition(0, 0, 10);
 		output = 0;
 		gyro.reset();
+		newOutput= 0;
+		newOutput2 = 0;
 	}
 	
 // **************************************Autonomous Methods************************************
@@ -962,28 +968,80 @@ public class Robot extends TimedRobot {
 //			clawIdleIn();
 //		}
 		
+		double newDelta = rightStickY - newOldInput;
 		
+		double newDeltaLimit = 0.0002;
 		
-		SmartDashboard.putNumber("RawAxis5", rightStickY);
+		if(newDelta >= newDeltaLimit) {
+			newMode = 1;
+			newCaptureValue = rightStickY;
+		} else if(newDelta <= -newDeltaLimit) {
+			newMode = 2;
+		}
+		
+		newOutput -= 0.05;
+		newOutput2 += 0.05;
+		
+		switch(newMode) {
+		case 1:
+			
+//			if(newOutput > newCaptureValue) {
+//				newMode = 3;
+//			}
+			break;
+//		case 2:
+//			newOutput += 0.002;
+//			if(newOutput < newCaptureValue) {
+//				newMode = 3;
+//			}
+//			break;
+//		
+//		case 3:
+//			newOutput = rightStickY;
+//			break;
+		}
+		
+		if(newOutput <= -1.0) {
+			newOutput = -1.0;
+		} 
+		if(newOutput2 >= 1.0) {
+			newOutput2 = 1.0;
+		}
 		
 		if(selSenPos < 0 && (rightStickY > 0.1 || (rightStickY >= -0.1 && rightStickY < 0.1))) {
 			liftMotor.set(ControlMode.PercentOutput, 0);
 		} else if((selSenPos >= -40000 && selSenPos <= 0) && rightStickY < 0.1) {
-				liftMotor.set(ControlMode.PercentOutput, rightStickY);
-		} else if(selSenPos >= 0  && (rightStickY <= -0.1 || rightStickY >= 0.1)) {
-			liftMotor.set(ControlMode.PercentOutput, rightStickY);
+			newOutput2 = 0;
+			liftMotor.set(ControlMode.PercentOutput, newOutput);
+		} else if((selSenPos >= 0 && selSenPos <= 68000) && rightStickY <= -0.1) {
+			newOutput2 = 0;
+			liftMotor.set(ControlMode.PercentOutput, newOutput);
 		} 
-		else if(selSenPos > 65000  && (rightStickY < 0.1 || (rightStickY >= -0.1 && rightStickY < 0.1))) {
+		else if((selSenPos >= 0 && selSenPos <= 68000) && rightStickY >= 0.1) {
+			newOutput = 0;
+			liftMotor.set(ControlMode.PercentOutput, newOutput2);
+		}
+		else if(selSenPos > 64000  && (rightStickY < 0.1 || (rightStickY >= -0.1 && rightStickY < 0.1))) {
 			liftMotor.set(ControlMode.PercentOutput, -0.15);
 		} 
 		else if((selSenPos >= 68000 && selSenPos <= 8000000) && rightStickY > -0.1) {
-			liftMotor.set(ControlMode.PercentOutput, rightStickY);
+			newOutput = 0;
+			liftMotor.set(ControlMode.PercentOutput, newOutput2);
 		} 
 		else if((selSenPos > 10000 && selSenPos < 20000) && (rightStickY > -0.1 && rightStickY < 0.1)) {
 			liftMotor.set(ControlMode.PercentOutput, -0.1);
 		} else if(selSenPos > 20000 && (rightStickY > -0.1 && rightStickY < 0.1)) {
 			liftMotor.set(ControlMode.PercentOutput, -0.15);
 		}
+		
+		SmartDashboard.putNumber("RawAxis5", rightStickY);
+		SmartDashboard.putNumber("New Output", newOutput);
+		SmartDashboard.putNumber("New Output 2", newOutput2);
+		
+		double liftMotorSpeed = liftMotor.getMotorOutputPercent();
+		SmartDashboard.putNumber("Lift Motor Speed", liftMotorSpeed);
+		
+		newOldInput = rightStickY;
 		
 		
 		if(controller.getAButton()) {

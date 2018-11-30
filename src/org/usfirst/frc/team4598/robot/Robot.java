@@ -34,6 +34,11 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.MotorSafety;
 import edu.wpi.first.wpilibj.MotorSafetyHelper;
 import edu.wpi.first.wpilibj.SPI;
+import edu.wpi.cscore.VideoCamera;
+import edu.wpi.cscore.MjpegServer;
+import edu.wpi.cscore.UsbCamera;
+import edu.wpi.first.wpilibj.CameraServer;
+
 
 
 
@@ -72,7 +77,7 @@ public class Robot extends TimedRobot {
 	
 	private XboxController controller = new XboxController(1);
 	
-	private Victor climbingWinch = new Victor(5);
+	private Victor climbingWinch = new Victor(7);
 //	Victor liftMotor = new Victor(5);
 	
 	private TalonSRX liftMotor = new TalonSRX(0);
@@ -80,13 +85,19 @@ public class Robot extends TimedRobot {
 	int selSenPos = liftMotor.getSelectedSensorPosition(0);
 	int pulseWidthWithoutOverflows = liftMotor.getSensorCollection().getPulseWidthPosition() & 0xFFF;
 	
-	private Victor clawMotor1 = new Victor(4);
+	private Victor clawMotor1 = new Victor(5);
 	private Victor clawMotor2 = new Victor(6);
 	private SpeedControllerGroup cubeIntake = new SpeedControllerGroup(clawMotor1, clawMotor2);
 	
 	private ADXRS450_Gyro gyro  = new ADXRS450_Gyro(SPI.Port.kOnboardCS0);
 	
 	public int autoCounter;
+	
+	private UsbCamera camera;
+	private MjpegServer server;
+	
+	
+			
 	
 
 	String gameData;
@@ -101,6 +112,7 @@ public class Robot extends TimedRobot {
 	private static final String blue3 = AllianceStationID.Blue3.toString();
 	private static final String switchAuto = "switch";
 	private static final String scaleAuto = "scale";
+	private static final String straightAuto = "straight";
 	private String playerStation;
 	private String scaleOrSwitch;
 	private SendableChooser<String> playerStationChooser = new SendableChooser<>();
@@ -141,6 +153,7 @@ public class Robot extends TimedRobot {
 		playerStationChooser.addObject("Blue 3", blue3);
 		switchOrScaleChooser.addObject("Go for Switch", switchAuto);
 		switchOrScaleChooser.addObject("Go for scale", scaleAuto);
+		switchOrScaleChooser.addObject("Drive Straigtht", straightAuto);
 		SmartDashboard.putData("Player Stations", playerStationChooser);
 		SmartDashboard.putData("Switch or Scale?", switchOrScaleChooser);
 		gameData = DriverStation.getInstance().getGameSpecificMessage();
@@ -149,8 +162,11 @@ public class Robot extends TimedRobot {
 		liftMotor.setSelectedSensorPosition(0, 0, 10);
 		output = 0;
 		gyro.reset();
-		newOutput= 0;
-		newOutput2 = 0;
+		newOutput= -1.0;
+		newOutput2 = 1.0;
+		camera = CameraServer.getInstance().startAutomaticCapture();
+		server = CameraServer.getInstance().addServer("VisionCam", 5800);
+		server.setSource(camera);
 	}
 	
 // **************************************Autonomous Methods************************************
@@ -256,39 +272,39 @@ public class Robot extends TimedRobot {
 			leftSideDrive.set(0.4);
 			rightSideDrive.set(0);
 		}
-		if(autoCounter > 60 && autoCounter < 100) {
+		if(autoCounter > 60 && autoCounter < 90) {
 //			leftSideDrive.set(0.4+(gyro.getAngle()* 0.015));
 //			rightSideDrive.set(-0.4+(gyro.getAngle()*0.015));
 			leftSideDrive.set(0.4);
 			rightSideDrive.set(-0.4);
 		} 
-		if(autoCounter > 100 && autoCounter < 140) {
+		if(autoCounter > 90 && autoCounter < 125) {
 			leftSideDrive.set(-0.4);
 			rightSideDrive.set(-0.4);
 		}
-		if(autoCounter > 140 && autoCounter < 210) {
+		if(autoCounter > 125 && autoCounter < 230) {
 			leftSideDrive.set(0);
 			rightSideDrive.set(0);
 			liftMotor.set(ControlMode.PercentOutput, -1.0);
 		} 
-		if(autoCounter > 210) {
+		if(autoCounter > 230) {
 			liftMotor.set(ControlMode.PercentOutput, -0.15);
 		}
-		if(autoCounter > 210 && autoCounter < 330) {
+		if(autoCounter > 230 && autoCounter < 350) {
 //			leftSideDrive.set(0.4+(gyro.getAngle()* 0.03));
 //			rightSideDrive.set(-0.4+(gyro.getAngle()*0.1));
 			leftSideDrive.set(0.4);
 			rightSideDrive.set(-0.4);
 		} 
-		if(autoCounter > 330) {
+		if(autoCounter > 350) {
 			leftSideDrive.set(0);
 			rightSideDrive.set(0);
 		}
 		gyro.reset();
-		if(autoCounter > 330 && autoCounter < 390) {
+		if(autoCounter > 350 && autoCounter < 415) {
 			cubeIntake.set(-0.6);
 		}
-		if(autoCounter > 390) {
+		if(autoCounter > 415) {
 			cubeIntake.set(0);
 		}
 	}
@@ -310,38 +326,38 @@ public class Robot extends TimedRobot {
 				leftSideDrive.set(0);
 				rightSideDrive.set(-0.4);
 			}
-			if(autoCounter > 60 && autoCounter < 210) {
+			if(autoCounter > 60 && autoCounter < 160) {
 //				leftSideDrive.set(0.4+(gyro.getAngle()* 0.015));
 //				rightSideDrive.set(-0.4+(gyro.getAngle()*0.015));
 				leftSideDrive.set(0.4);
 				rightSideDrive.set(-0.4);
 			} 
-			if(autoCounter > 210 && autoCounter < 230) {
+			if(autoCounter > 160 && autoCounter < 180) {
 				leftSideDrive.set(0.4);
 				rightSideDrive.set(0.4);
 			}
-			if(autoCounter > 230 && autoCounter < 300) {
+			if(autoCounter > 180 && autoCounter < 250) {
 				leftSideDrive.set(0);
 				rightSideDrive.set(0);
 				liftMotor.set(ControlMode.PercentOutput, -1.0);
 			} 
-			if(autoCounter > 300) {
+			if(autoCounter > 250) {
 				liftMotor.set(ControlMode.PercentOutput, -0.15);
 			}
-			if(autoCounter > 300 && autoCounter < 380) {
+			if(autoCounter > 250 && autoCounter < 330) {
 //				leftSideDrive.set(0.4+(gyro.getAngle()* 0.03));
 //				rightSideDrive.set(-0.4+(gyro.getAngle()*0.1));
 				leftSideDrive.set(0.4);
 				rightSideDrive.set(-0.4);
 			} 
-			if(autoCounter > 380) {
+			if(autoCounter > 330) {
 				leftSideDrive.set(0);
 				rightSideDrive.set(0);
 			}
-			if(autoCounter > 380 && autoCounter < 440) {
+			if(autoCounter > 330 && autoCounter < 410) {
 				cubeIntake.set(-0.6);
 			}
-			if(autoCounter > 440) {
+			if(autoCounter > 410) {
 				cubeIntake.set(0);
 			}
 		}
@@ -404,11 +420,13 @@ public class Robot extends TimedRobot {
 	}
 	
 	private void driveStraight(int numIterations) {
-		gyro.reset();
 		autoCounter++;
+		if(autoCounter < 1) {
+			gyro.reset();
+		}
 		if(autoCounter < numIterations) {
-			leftSideDrive.set(0.4);
-			rightSideDrive.set(-0.5);
+			leftSideDrive.set(0.4+(0.01*gyro.getAngle()));
+			rightSideDrive.set(-0.4-(0.03*gyro.getAngle()));
 		} else if(autoCounter > numIterations) {
 			leftSideDrive.set(0);
 			rightSideDrive.set(0);
@@ -462,24 +480,24 @@ public class Robot extends TimedRobot {
 		if(autoCounter > 1 && autoCounter < 350) {
 			driveStraightContinuing();
 		} 
-		if(autoCounter > 351 && autoCounter < 380) {
+		if(autoCounter > 351 && autoCounter < 420) {
 			leftSideDrive.set(0.4);
 			rightSideDrive.set(0.4);
 		} 
-		if(autoCounter > 380) {
+		if(autoCounter > 420) {
 			leftSideDrive.set(0);
 			rightSideDrive.set(0);
 		} 
-		if(autoCounter > 380 && autoCounter < 550) {
+		if(autoCounter > 420 && autoCounter < 650) {
 			liftToScaleAuto();
 		} 
-		if(autoCounter > 550 && autoCounter < 600) {
-			cubeIntake.set(-1.0);
+		if(autoCounter > 650 && autoCounter < 700) {
+			cubeIntake.set(-0.6);
 		} 
-		if(autoCounter > 600) {
+		if(autoCounter > 700) {
 			cubeIntake.set(0);
 		} 
-		if(autoCounter > 600 && autoCounter < 750) {
+		if(autoCounter > 700 && autoCounter < 750) {
 			liftDownAuto();
 		}
 	}
@@ -567,27 +585,27 @@ public class Robot extends TimedRobot {
 			leftSideDrive.set(0);
 			rightSideDrive.set(0);
 		}
-		if(autoCounter > 60 && autoCounter < 220) {
+		if(autoCounter > 60 && autoCounter < 150) {
 			driveStraightContinuing();
 		}
-		if(autoCounter > 220 && autoCounter < 260) {
+		if(autoCounter > 150 && autoCounter < 175) {
 			leftSideDrive.set(-0.4);
 			rightSideDrive.set(-0.4);
 		} 
-		if(autoCounter > 260) {
+		if(autoCounter > 175) {
 			leftSideDrive.set(0);
 			rightSideDrive.set(0);
 		}
-		if(autoCounter > 260 && autoCounter < 340) {
+		if(autoCounter > 175 && autoCounter < 255) {
 			liftMotor.set(ControlMode.PercentOutput, -1.0);
 		}
-		if(autoCounter > 340) {
+		if(autoCounter > 255) {
 			liftMotor.set(ControlMode.PercentOutput, -0.15);
 		}
-		if(autoCounter > 340 && autoCounter < 440) {
+		if(autoCounter > 255 && autoCounter < 355) {
 			cubeIntake.set(-0.7);
 		}
-		if(autoCounter > 440) {
+		if(autoCounter > 355) {
 			cubeIntake.set(0);
 		}
 		
@@ -632,27 +650,27 @@ public class Robot extends TimedRobot {
 			leftSideDrive.set(0);
 			rightSideDrive.set(0);
 		}
-		if(autoCounter > 60 && autoCounter < 230) {
+		if(autoCounter > 60 && autoCounter < 150) {
 			driveStraightContinuing();
 		}
-		if(autoCounter > 230 && autoCounter < 270) {
+		if(autoCounter > 150 && autoCounter < 170) {
 			leftSideDrive.set(0.38);
 			rightSideDrive.set(0.4);
 		} 
-		if(autoCounter > 270) {
+		if(autoCounter > 170) {
 			leftSideDrive.set(0);
 			rightSideDrive.set(0);
 		}
-		if(autoCounter > 270 && autoCounter < 350) {
+		if(autoCounter > 170 && autoCounter < 250) {
 			liftMotor.set(ControlMode.PercentOutput, -1.0);
 		}
-		if(autoCounter > 350) {
+		if(autoCounter > 250) {
 			liftMotor.set(ControlMode.PercentOutput, -0.15);
 		}
-		if(autoCounter > 350 && autoCounter < 450) {
+		if(autoCounter > 250 && autoCounter < 350) {
 			cubeIntake.set(-0.6);
 		}
-		if(autoCounter > 450) {
+		if(autoCounter > 350) {
 			cubeIntake.set(0);
 		}
 	}
@@ -740,9 +758,9 @@ public class Robot extends TimedRobot {
 	
 	private void liftToScaleAuto() {
 		int selSenPos = liftMotor.getSelectedSensorPosition(0);
-		if(selSenPos <= 63000) {
+		if(selSenPos <= 90000) {
 			liftMotor.set(ControlMode.PercentOutput, -1.0);
-		} else if(selSenPos >= 63000) {
+		} else if(selSenPos >= 90000) {
 			liftMotor.set(ControlMode.PercentOutput, -0.15);
 		}
 	}
@@ -808,13 +826,18 @@ public class Robot extends TimedRobot {
 			if(gameData.length() > 0) {
 				if(gameData.charAt(0) == 'R') {
 					autoCommand = "autonomous 8";
-				} else if(gameData.charAt(1) == 'R') {
-					autoCommand = "autonomous 4";
-				} else if(gameData.charAt(0) == 'L' && gameData.charAt(1) == 'L') {
+				} 
+//				else if(gameData.charAt(1) == 'R') {
+//					autoCommand = "autonomous 4";
+//				} 
+				else if(gameData.charAt(0) == 'L' && gameData.charAt(1) == 'L') {
 					autoCommand = "autonomous 7";
 				}
 			}
-		} else if((playerStation == blue1 || playerStation == red1) && scaleOrSwitch == scaleAuto) {
+		} else if((playerStation == blue3 || playerStation == red3) && scaleOrSwitch == straightAuto) {
+			autoCommand = "autonomous 10";
+		}
+		else if((playerStation == blue1 || playerStation == red1) && scaleOrSwitch == scaleAuto) {
 			if(gameData.length() > 0) {
 				if(gameData.charAt(1) == 'L') {
 					autoCommand = "autonomous 5";
@@ -827,15 +850,19 @@ public class Robot extends TimedRobot {
 //					autoCommand = "autonomous 6";
 //				}
 			}
+		} else if((playerStation == blue1 || playerStation == red1) && scaleOrSwitch == straightAuto) {
+			autoCommand = "autonomous 10";
 		} else if((playerStation == blue1 || playerStation == red1) && scaleOrSwitch == switchAuto) {
 			if(gameData.length() > 0) {
 				if(gameData.charAt(0) == 'L') {
 					autoCommand = "autonomous 9";
-				} else if(gameData.charAt(1) == 'L') {
-					autoCommand = "autonomous 5";
-				} else if(gameData.charAt(0) == 'R' && gameData.charAt(1) == 'R') {
-					autoCommand = "autonomous 10";
-				}
+				} 
+//				else if(gameData.charAt(1) == 'L' && gameData.charAt(0) == 'R') {
+//					autoCommand = "autonomous 5";
+					else if(gameData.charAt(0) == 'R') {
+						autoCommand = "autonomous 10";
+					}
+				}  
 			}
 //			if(gameData.charAt(0) == 'R') {
 //				autoCommand = "autonomous 10";
@@ -844,60 +871,62 @@ public class Robot extends TimedRobot {
 		
 		
 		
-	}
+	
 
 	/**
 	 * This function is called periodically during autonomous.
 	 */
 	@Override
 	public void autonomousPeriodic() {
-		autoEnabled = true;
-		teleOpEnabled = false;
-		ledMode.setNumber(1);
-		camMode.setNumber(1);
-		switch (autoCommand) {
-			case "autonomous 1":
-//				rightSwitchWithLimelight();
-				rightSwitchWithoutLimelight();
-				break;
-			case "autonomous 2":
-//				leftSwitchWithLimelight();
-				leftSwitchWithoutLimelight();
-				break;
-			case "autonomous 3":
-//				driveStraightRight();
-//				scaleLeftAndPlayerStationRight();
-				driveStraight(150);
-				break;
-			case "autonomous 4":
-//				driveStraightRight();
-				scaleRightAndPlayerStationRight();
-//				driveStraight(150);
-				break;
-			case "autonomous 5":
-//				driveStraightLeft();
-				scaleLeftAndPlayerStationLeft();
-//				driveStraight(150);
-				break;
-			case "autonomous 6":
-//				scaleRightAndPlayerStationLeft();
-//				driveStraightLeft();
-				driveStraight(150);
-				break;
-			case "autonomous 7":
-				switchLeftAndPlayerStationRight();
-				break;
-			case "autonomous 8":
-				switchRightAndPlayerStationRight();
-				break;
-			case "autonomous 9":
-				switchLeftAndPlayerStationLeft();
-				break;
-			case "autonomous 10":
-				switchRightAndPlayerStationLeft();
-				break;
+		driveStraight(95);
+//		autoEnabled = true;
+//		teleOpEnabled = false;
+//		ledMode.setNumber(1);
+//		camMode.setNumber(1);
+//		switch (autoCommand) {
+////			case "autonomous 1":
+//////				rightSwitchWithLimelight();
+////				rightSwitchWithoutLimelight();
+////				break;
+////			case "autonomous 2":
+//////				leftSwitchWithLimelight();
+////				leftSwitchWithoutLimelight();
+////				break;
+////			case "autonomous 3":
+//////				driveStraightRight();
+//////				scaleLeftAndPlayerStationRight();
+////				driveStraight(150);
+////				break;
+////			case "autonomous 4":
+//////				driveStraightRight();
+////				scaleRightAndPlayerStationRight();
+//////				driveStraight(150);
+////				break;
+////			case "autonomous 5":
+//////				driveStraightLeft();
+////				scaleLeftAndPlayerStationLeft();
+//////				driveStraight(150);
+////				break;
+////			case "autonomous 6":
+//////				scaleRightAndPlayerStationLeft();
+//////				driveStraightLeft();
+////				driveStraight(150);
+////				break;
+////			case "autonomous 7":
+////				driveStraight(150);
+//////				switchLeftAndPlayerStationRight();
+////				break;
+////			case "autonomous 8":
+////				switchRightAndPlayerStationRight();
+////				break;
+////			case "autonomous 9":
+////				switchLeftAndPlayerStationLeft();
+////				break;
+////			case "autonomous 10":
+////				driveStraight(95);
+//////				switchRightAndPlayerStationLeft();
+////				break;
 			}
-	}
 		
 
 
@@ -906,8 +935,10 @@ public class Robot extends TimedRobot {
 	 */
 	@Override
 	public void teleopPeriodic() {
+//		CameraServer.getInstance().startAutomaticCapture(camera);
 		int selSenPos = liftMotor.getSelectedSensorPosition(0);
 		int pulseWidthWithoutOverflows = liftMotor.getSensorCollection().getPulseWidthPosition() & 0xFFF;
+		CameraServer.getInstance().getServer();
 		
 		double leftStickY = controller.getRawAxis(1);
 		double leftStickX = controller.getRawAxis(0);
@@ -939,8 +970,8 @@ public class Robot extends TimedRobot {
 		}
 		
 		if(leftStickY != 0) {
-			double leftSpeed = -0.7*leftStickY+reduceLeftSpeed;
-			double rightSpeed = 0.7*leftStickY+reduceRightSpeed;	
+			double leftSpeed = -0.5*leftStickY+reduceLeftSpeed;
+			double rightSpeed = 0.5*leftStickY+reduceRightSpeed;	
 			leftSideDrive.set(leftSpeed);
 			rightSideDrive.set(rightSpeed);
 		} 
@@ -972,61 +1003,72 @@ public class Robot extends TimedRobot {
 		
 		double newDeltaLimit = 0.0002;
 		
-		if(newDelta >= newDeltaLimit) {
+		if(newDelta >= newDeltaLimit || rightStickY > 0.8) {
 			newMode = 1;
 			newCaptureValue = rightStickY;
-		} else if(newDelta <= -newDeltaLimit) {
+		} else if(newDelta <= -newDeltaLimit || rightStickY < -0.8) {
 			newMode = 2;
 		}
 		
-		newOutput -= 0.05;
-		newOutput2 += 0.05;
+		
 		
 		switch(newMode) {
 		case 1:
-			
-//			if(newOutput > newCaptureValue) {
-//				newMode = 3;
-//			}
+//			newOutput += 0.003;
+			newOutput2 -= 0.003;
+			if(rightStickY < 0.5) {
+				newMode = 3;
+			}
 			break;
-//		case 2:
+		case 2:
+			newOutput += 0.003;
 //			newOutput += 0.002;
-//			if(newOutput < newCaptureValue) {
-//				newMode = 3;
-//			}
-//			break;
+			if(rightStickY > -0.5) {
+				newMode = 3;
+			}
+			break;
 //		
-//		case 3:
-//			newOutput = rightStickY;
-//			break;
+		case 3:
+			newOutput = rightStickY;
+			newOutput2 = rightStickY;
+			break;
 		}
 		
-		if(newOutput <= -1.0) {
-			newOutput = -1.0;
-		} 
-		if(newOutput2 >= 1.0) {
+		if(newOutput >= 0 && rightStickY <= -0.8) {
+			newOutput = 0;
+		} else if(newOutput2 <= 0 && rightStickY >= 0.8) {
+			newOutput2 = 0;
+		}
+		
+		if(newOutput >= 0 && rightStickY >= -0.1) {
+			newOutput = 1.0;
+		} else if(newOutput2 <= 0 && rightStickY <= 0.1) {
 			newOutput2 = 1.0;
 		}
 		
 		if(selSenPos < 0 && (rightStickY > 0.1 || (rightStickY >= -0.1 && rightStickY < 0.1))) {
 			liftMotor.set(ControlMode.PercentOutput, 0);
 		} else if((selSenPos >= -40000 && selSenPos <= 0) && rightStickY < 0.1) {
+//			newOutput += 0.003;
 			newOutput2 = 0;
-			liftMotor.set(ControlMode.PercentOutput, newOutput);
-		} else if((selSenPos >= 0 && selSenPos <= 68000) && rightStickY <= -0.1) {
+			liftMotor.set(ControlMode.PercentOutput, 0.95*rightStickY);
+		} else if((selSenPos >= 0 && selSenPos <= 250000) && rightStickY <= -0.1) {
+//			newOutput += 0.003;
 			newOutput2 = 0;
-			liftMotor.set(ControlMode.PercentOutput, newOutput);
+			liftMotor.set(ControlMode.PercentOutput, 0.95*rightStickY);
 		} 
-		else if((selSenPos >= 0 && selSenPos <= 68000) && rightStickY >= 0.1) {
+		else if((selSenPos >= 0 && selSenPos <= 250000) && rightStickY >= 0.1) {
+//			newOutput2 -= 0.003;
 			newOutput = 0;
-			liftMotor.set(ControlMode.PercentOutput, newOutput2);
+			liftMotor.set(ControlMode.PercentOutput, 0.95*rightStickY);
 		}
-		else if(selSenPos > 64000  && (rightStickY < 0.1 || (rightStickY >= -0.1 && rightStickY < 0.1))) {
+		else if(selSenPos > 250000  && (rightStickY < 0.1 || (rightStickY >= -0.1 && rightStickY < 0.1))) {
 			liftMotor.set(ControlMode.PercentOutput, -0.15);
 		} 
-		else if((selSenPos >= 68000 && selSenPos <= 8000000) && rightStickY > -0.1) {
+		else if((selSenPos >= 25000 && selSenPos <= 8000000) && rightStickY > -0.1) {
+//			newOutput2 -= 0.003;
 			newOutput = 0;
-			liftMotor.set(ControlMode.PercentOutput, newOutput2);
+			liftMotor.set(ControlMode.PercentOutput, 0.95*rightStickY);
 		} 
 		else if((selSenPos > 10000 && selSenPos < 20000) && (rightStickY > -0.1 && rightStickY < 0.1)) {
 			liftMotor.set(ControlMode.PercentOutput, -0.1);
@@ -1055,18 +1097,15 @@ public class Robot extends TimedRobot {
 		// testing 
 
 		//rate of change in joystick values.
-		if (output > 0 && (rightTrigger <= 0.15 || rightTrigger == 0)) {
-			output = 0.3;
-		} 
+//		if (output > 0 && (rightTrigger <= 0.15 || rightTrigger == 0)) {
+//			output = 0.3;
+//		} 
 		
-		if(output > 1.0) {
-			output = 1.0;
-		}
 		
 		if(rightTrigger > 0.15) {
 			double delta = rightTrigger - oldInput;
 			
-			double DELTA_LIMIT = 0.2;
+			double DELTA_LIMIT = 0.02;
 
 			//is joystick being moved too fast?
 			if(delta >= DELTA_LIMIT) { 
@@ -1091,9 +1130,15 @@ public class Robot extends TimedRobot {
 			//Keep values for next loop
 			oldInput = rightTrigger;
 		} else if(leftTrigger > 0.15) {
-			cubeIntake.set(-leftTrigger);
+			cubeIntake.set(0.7*-leftTrigger);
 		} else {
 			clawIdleIn();
+		}
+		
+		if(output > 1.0 && rightTrigger >= 0.6) {
+			output = 1.0;
+		} else if(output > 1.0 && rightTrigger <= 0.2) {
+			output = 0;
 		}
 		
 			
@@ -1105,8 +1150,8 @@ public class Robot extends TimedRobot {
 	 */
 	@Override
 	public void testPeriodic() {
-//		driveStraightContinuing();
-		liftToScaleAuto();
+		driveStraightContinuing();
+//		liftToScaleAuto();
 //		if((gyro.getAngle() >= -30 && gyro.getAngle() <= -60)) {
 //			leftSideDrive.set(-0.4);
 //			rightSideDrive.set(-0.4);
